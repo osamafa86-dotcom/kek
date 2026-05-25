@@ -32,7 +32,14 @@
 
 <!-- ===== الأيقونة ===== -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%232e1c14'/><polygon points='21,35 43,35 39,56 25,56' fill='%23e7c876'/><path d='M18 35 a14 11 0 0 1 28 0 Z' fill='%23f6ead4'/><circle cx='32' cy='22' r='3.5' fill='%23c0392b'/></svg>" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%232e1c14'/><polygon points='21,35 43,35 39,56 25,56' fill='%23e7c876'/><path d='M18 35 a14 11 0 0 1 28 0 Z' fill='%23f6ead4'/><circle cx='32' cy='22' r='3.5' fill='%23c0392b'/></svg>" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+<!-- ===== PWA ===== -->
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="حلا بيت" />
 
 <!-- منع وميض الوضع الليلي قبل الرسم -->
 <script>
@@ -473,6 +480,15 @@
   }
   .theme-toggle:hover { background: rgba(255,255,255,.22); transform: rotate(12deg); }
 
+  .install-btn {
+    display: none; align-items: center; gap: 5px; flex-shrink: 0;
+    background: var(--gold); color: var(--brown-900); font-weight: 800; font-size: 13px;
+    padding: 8px 13px; border-radius: 30px; transition: .2s;
+  }
+  .install-btn.show { display: inline-flex; }
+  .install-btn:hover { background: var(--gold-soft); }
+  :root.dark .install-btn { color: #2e1c14; }
+
   /* ============================================================
      زر واتساب العائم
      ============================================================ */
@@ -612,6 +628,7 @@
     </div>
     <div class="nav-spacer"></div>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="تبديل الوضع الليلي" title="الوضع الليلي / النهاري">🌙</button>
+    <button class="install-btn" id="installBtn" onclick="installApp()" aria-label="تثبيت التطبيق">⤓ تثبيت</button>
     <div class="currency-switch" id="currencySwitch">
       <button data-cur="TRY" class="active">₺ ليرة</button>
       <button data-cur="USD">$ دولار</button>
@@ -1778,6 +1795,35 @@ updateCartCount();
 updateAccountUI();
 updateWaFab();
 applyThemeIcon();
+
+/* ===== PWA: التثبيت + Service Worker ===== */
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const b = document.getElementById("installBtn");
+  if (b) b.classList.add("show");
+});
+function installApp(){
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.finally(() => {
+    deferredPrompt = null;
+    const b = document.getElementById("installBtn");
+    if (b) b.classList.remove("show");
+  });
+}
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+  const b = document.getElementById("installBtn");
+  if (b) b.classList.remove("show");
+  showToast("تم تثبيت التطبيق 🎉");
+});
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
