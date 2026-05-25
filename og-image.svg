@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="'Cairo','Segoe UI',Tahoma,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a2418"/>
+      <stop offset="1" stop-color="#2e1c14"/>
+    </linearGradient>
+    <radialGradient id="emblem" cx="35%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#f1da90"/>
+      <stop offset="1" stop-color="#c79a3f"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="80%" cy="18%" r="55%">
+      <stop offset="0" stop-color="#6f4e37" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#6f4e37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- زخارف -->
+  <circle cx="120" cy="540" r="160" fill="#ffffff" opacity="0.03"/>
+  <circle cx="1080" cy="90" r="120" fill="#e7c876" opacity="0.05"/>
+
+  <!-- شعار الكب كيك -->
+  <circle cx="600" cy="172" r="92" fill="url(#emblem)" stroke="#f4e6d2" stroke-width="4"/>
+  <circle cx="600" cy="120" r="11" fill="#c0392b"/>
+  <path d="M551 176 a49 39 0 0 1 98 0 Z" fill="#fff6e6"/>
+  <polygon points="556,176 644,176 631,226 569,226" fill="#5a3a28"/>
+
+  <!-- النصوص -->
+  <text x="600" y="350" text-anchor="middle" direction="rtl" fill="#e7c876" font-size="116" font-weight="900">حلا بيت</text>
+  <text x="600" y="412" text-anchor="middle" direction="rtl" fill="#f4e6d2" font-size="40" font-weight="700">أحلى الحلويات تُوصل لباب بيتك</text>
+  <text x="600" y="466" text-anchor="middle" direction="rtl" fill="#c9a86a" font-size="30" font-weight="600">كريب · وافل · بان كيك · كب كيك</text>
+
+  <!-- زر واتساب -->
+  <rect x="402" y="508" width="396" height="76" rx="38" fill="#25d366"/>
+  <text x="600" y="558" text-anchor="middle" direction="rtl" fill="#ffffff" font-size="34" font-weight="800">اطلب الآن عبر واتساب</text>
+</svg>
