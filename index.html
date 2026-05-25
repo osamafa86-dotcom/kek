@@ -578,6 +578,24 @@
     .wa-fab { width: 52px; height: 52px; bottom: 16px; left: 16px; }
     .wa-fab svg { width: 27px; height: 27px; }
   }
+
+  /* ============================================================
+     صور المنتجات
+     ============================================================ */
+  .product .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ci-thumb { overflow: hidden; }
+  .ci-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .pe-imgwrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pe-thumb {
+    width: 48px; height: 48px; border-radius: 10px; overflow: hidden;
+    display: grid; place-items: center; background: var(--cream); font-size: 24px;
+  }
+  .pe-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .pe-emoji-in { width: 54px !important; text-align: center; }
+  .pe-upload { cursor: pointer; padding: 4px 10px; font-size: 15px; }
+  .pe-rmimg { background: #f7dcd8; color: #c0392b; font-size: 11px; padding: 3px 8px; border-radius: 8px; white-space: nowrap; }
+  .np-preview { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; display: none; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -969,7 +987,7 @@ function renderProducts(){
     const card = document.createElement("div");
     card.className = "product";
     card.innerHTML = `
-      <div class="thumb">${esc(p.emoji)}</div>
+      <div class="thumb">${p.img ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">` : esc(p.emoji)}</div>
       <div class="body">
         <span class="cat-tag">${esc(catName(p.cat))}</span>
         <h3>${esc(p.name)}</h3>
@@ -1034,7 +1052,7 @@ function renderCart(){
   waBtn.disabled = false;
   box.innerHTML = items.map(it => `
     <div class="cart-item">
-      <div class="ci-thumb">${esc(it.emoji)}</div>
+      <div class="ci-thumb">${it.img ? `<img src="${esc(it.img)}" alt="">` : esc(it.emoji)}</div>
       <div class="ci-info">
         <h4>${esc(it.name)}</h4>
         <span class="ci-price">${fmt(it.priceTRY)} × ${it.qty}</span>
@@ -1495,6 +1513,8 @@ function renderAdminTab(tab){
     box.innerHTML = html;
 
   } else if (tab === "products"){
+    Object.keys(pendingImg).forEach(k => delete pendingImg[k]);
+    newProductImg = null;
     let html = `<div class="dash-h">🧁 إدارة المنتجات (${products.length})</div>
       <div class="panel">
         <div class="panel-h">➕ إضافة منتج جديد</div>
@@ -1502,21 +1522,34 @@ function renderAdminTab(tab){
           <div class="field"><label>الاسم</label><input type="text" id="npName" placeholder="اسم المنتج"></div>
           <div class="field"><label>التصنيف</label><select id="npCat">
             ${PROD_CATS.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}</select></div>
-          <div class="field"><label>الرمز</label><input type="text" id="npEmoji" placeholder="🧁" maxlength="4"></div>
           <div class="field"><label>السعر (₺)</label><input type="number" id="npPrice" placeholder="0" min="0"></div>
           <div class="field"><label>الوصف</label><input type="text" id="npDesc" placeholder="وصف قصير"></div>
+          <div class="field"><label>الرمز (احتياطي)</label><input type="text" id="npEmoji" placeholder="🧁" maxlength="4"></div>
+          <div class="field"><label>صورة المنتج (اختياري)</label>
+            <label class="mini-btn" style="display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">📷 اختر صورة
+              <input type="file" accept="image/*" hidden id="npImgFile" onchange="onPickNewImg(this)"></label>
+            <img id="npImgPreview" class="np-preview" alt="">
+          </div>
           <button class="mini-btn gold" style="padding:11px 16px;" onclick="addProduct()">إضافة</button>
         </div>
       </div>
       <div class="panel"><div class="panel-h">قائمة المنتجات</div>
       <table class="tbl"><thead><tr>
-        <th>الرمز</th><th>الاسم</th><th>التصنيف</th><th>السعر (₺)</th><th>إجراءات</th></tr></thead><tbody>`;
+        <th>الصورة</th><th>الاسم</th><th>التصنيف</th><th>السعر (₺)</th><th>إجراءات</th></tr></thead><tbody>`;
     if (products.length === 0){
       html += `<tr><td colspan="5" style="text-align:center;color:var(--muted);">لا توجد منتجات.</td></tr>`;
     } else {
       products.forEach(p => {
+        const thumbInner = p.img ? `<img src="${esc(p.img)}" alt="">` : `<span>${esc(p.emoji)}</span>`;
         html += `<tr>
-          <td style="font-size:22px;"><input type="text" id="pe-emoji-${p.id}" value="${esc(p.emoji)}" maxlength="4" style="width:60px;text-align:center;"></td>
+          <td>
+            <div class="pe-imgwrap">
+              <div class="pe-thumb" id="pe-thumb-${p.id}">${thumbInner}</div>
+              <label class="mini-btn pe-upload" title="رفع صورة">📷<input type="file" accept="image/*" hidden onchange="onPickEditImg(${p.id}, this)"></label>
+              <input type="text" id="pe-emoji-${p.id}" value="${esc(p.emoji)}" maxlength="4" class="pe-emoji-in" title="رمز احتياطي">
+              ${p.img ? `<button class="pe-rmimg" onclick="removeEditImg(${p.id})">إزالة الصورة</button>` : ``}
+            </div>
+          </td>
           <td><input type="text" id="pe-name-${p.id}" value="${esc(p.name)}"></td>
           <td><select id="pe-cat-${p.id}">
             ${PROD_CATS.map(c => `<option value="${c.id}" ${c.id===p.cat?"selected":""}>${c.name}</option>`).join("")}
@@ -1607,6 +1640,69 @@ function deleteOrder(id){
 function nextProductId(){
   return products.reduce((m,p) => Math.max(m, p.id), 0) + 1;
 }
+
+/* ===== صور المنتجات ===== */
+let newProductImg = null;      // صورة نموذج الإضافة (data URL)
+const pendingImg = {};         // تعديلات الصور المعلّقة بالصفوف: id -> dataURL | false(إزالة)
+
+/* قراءة الصورة وتصغيرها لتقليل حجم التخزين */
+function resizeImage(file, cb){
+  if (!file){ cb(null); return; }
+  if (!/^image\//.test(file.type)){ showToast("الملف ليس صورة ⚠️"); cb(null); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 600;
+      let w = img.width, h = img.height;
+      if (w > max || h > max){ const r = Math.min(max / w, max / h); w = Math.round(w * r); h = Math.round(h * r); }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      cb(c.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = () => { showToast("تعذّر قراءة الصورة ⚠️"); cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = () => { showToast("تعذّر قراءة الملف ⚠️"); cb(null); };
+  reader.readAsDataURL(file);
+}
+
+function onPickNewImg(input){
+  resizeImage(input.files[0], dataUrl => {
+    newProductImg = dataUrl;
+    const pv = document.getElementById("npImgPreview");
+    if (pv){
+      if (dataUrl){ pv.src = dataUrl; pv.style.display = "block"; }
+      else { pv.style.display = "none"; }
+    }
+  });
+}
+
+function onPickEditImg(id, input){
+  resizeImage(input.files[0], dataUrl => {
+    if (!dataUrl) return;
+    pendingImg[id] = dataUrl;
+    const box = document.getElementById("pe-thumb-" + id);
+    if (box) box.innerHTML = `<img src="${esc(dataUrl)}" alt="">`;
+    showToast("تم اختيار الصورة — اضغط «حفظ» لتثبيتها 📷");
+  });
+}
+
+function removeEditImg(id){
+  pendingImg[id] = false;
+  const box = document.getElementById("pe-thumb-" + id);
+  const p = products.find(x => x.id === id);
+  if (box) box.textContent = p ? p.emoji : "🍰";
+  showToast("ستُزال الصورة عند الحفظ");
+}
+
+/* حفظ المنتجات مع التعامل مع امتلاء مساحة التخزين */
+function persistProducts(){
+  try { DB.set(K.products, products); return true; }
+  catch(e){ showToast("تعذّر الحفظ — قد تكون الصورة كبيرة، جرّب صورة أصغر ⚠️"); return false; }
+}
+
 function addProduct(){
   const name  = document.getElementById("npName").value.trim();
   const cat   = document.getElementById("npCat").value;
@@ -1615,8 +1711,11 @@ function addProduct(){
   const desc  = document.getElementById("npDesc").value.trim();
   if (name.length < 2){ showToast("أدخل اسم المنتج ⚠️"); return; }
   if (isNaN(price) || price < 0){ showToast("أدخل سعراً صحيحاً ⚠️"); return; }
-  products.push({ id: nextProductId(), cat, name, emoji, priceTRY: price, desc });
-  DB.set(K.products, products);
+  const prod = { id: nextProductId(), cat, name, emoji, priceTRY: price, desc };
+  if (newProductImg) prod.img = newProductImg;
+  products.push(prod);
+  if (!persistProducts()){ products.pop(); return; }
+  newProductImg = null;
   renderProducts(); renderAdminTab("products");
   showToast(`تمت إضافة "${name}" ✅`);
 }
@@ -1629,9 +1728,16 @@ function saveProductEdit(id){
   const price = parseFloat(document.getElementById("pe-price-"+id).value);
   if (name.length < 2){ showToast("الاسم غير صحيح ⚠️"); return; }
   if (isNaN(price) || price < 0){ showToast("السعر غير صحيح ⚠️"); return; }
+  const old = { name:p.name, cat:p.cat, emoji:p.emoji, priceTRY:p.priceTRY, img:p.img };
   p.name = name; p.cat = cat; p.emoji = emoji; p.priceTRY = price;
-  DB.set(K.products, products);
-  renderProducts(); renderCart();
+  if (id in pendingImg){ if (pendingImg[id]) p.img = pendingImg[id]; else delete p.img; }
+  if (!persistProducts()){
+    p.name = old.name; p.cat = old.cat; p.emoji = old.emoji; p.priceTRY = old.priceTRY;
+    if (old.img) p.img = old.img; else delete p.img;
+    return;
+  }
+  delete pendingImg[id];
+  renderProducts(); renderCart(); renderAdminTab("products");
   showToast(`تم حفظ "${name}" ✅`);
 }
 function deleteProduct(id){
