@@ -19,4 +19,5 @@ jobs:
           server:   ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ./public_html/
+          # FTP لهذا الحساب يهبط مباشرة على جذر kek.emdatra.org، فالرفع للجذر لا لمجلد فرعي
+          server-dir: ./
