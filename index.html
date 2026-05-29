@@ -101,12 +101,13 @@
   .logo .name span { font-size: 11px; color: var(--gold-soft); font-weight: 600; }
   .nav-spacer { flex: 1; }
 
-  .currency-switch { display: flex; background: rgba(255,255,255,.12); border-radius: 30px; padding: 4px; }
-  .currency-switch button {
+  .currency-switch, .lang-switch { display: flex; background: rgba(255,255,255,.12); border-radius: 30px; padding: 4px; }
+  .currency-switch button, .lang-switch button {
     background: transparent; color: #f0e2cf; font-weight: 700; font-size: 13px;
     padding: 6px 12px; border-radius: 30px; transition: .2s;
   }
-  .currency-switch button.active { background: var(--gold); color: var(--brown-900); }
+  .currency-switch button.active, .lang-switch button.active { background: var(--gold); color: var(--brown-900); }
+  .lang-switch button { padding: 6px 10px; font-size: 12px; letter-spacing: .5px; }
 
   /* زر الحساب + القائمة */
   .acct-wrap { position: relative; }
@@ -456,7 +457,7 @@
   @media (max-width: 620px) {
     .nav { flex-wrap: wrap; gap: 10px; }
     .logo .name b { font-size: 19px; }
-    .currency-switch button { padding: 6px 9px; }
+    .currency-switch button, .lang-switch button { padding: 6px 9px; }
     .acct-btn, .cart-btn { padding: 9px 12px; font-size: 13px; }
   }
   @media (max-width: 720px) {
@@ -555,7 +556,7 @@
   /* النصوص/الأزرار الذهبية: نص داكن فوق الذهبي الفاتح */
   :root.dark .hero-cta,
   :root.dark .cart-btn,
-  :root.dark .currency-switch button.active,
+  :root.dark .currency-switch button.active, :root.dark .lang-switch button.active,
   :root.dark .dash-bar .d-close,
   :root.dark .mini-btn.gold,
   :root.dark .mini-btn:hover { color: #2e1c14; }
@@ -747,30 +748,34 @@
     <div class="logo">
       <div class="mark">🧁</div>
       <div class="name">
-        <b>حلا بيت</b>
-        <span>حلويات طازجة كل يوم</span>
+        <b data-i18n="storeName">حلا بيت</b>
+        <span data-i18n="storeTagline">حلويات طازجة كل يوم</span>
       </div>
     </div>
     <div class="nav-spacer"></div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="تبديل الوضع الليلي" title="الوضع الليلي / النهاري">🌙</button>
-    <button class="install-btn" id="installBtn" onclick="installApp()" aria-label="تثبيت التطبيق">⤓ تثبيت</button>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" data-i18n-aria="themeAria" data-i18n-title="themeTitle" aria-label="تبديل الوضع الليلي" title="الوضع الليلي / النهاري">🌙</button>
+    <button class="install-btn" id="installBtn" onclick="installApp()" data-i18n="install" data-i18n-aria="installAria" aria-label="تثبيت التطبيق">⤓ تثبيت</button>
     <div class="currency-switch" id="currencySwitch">
-      <button data-cur="TRY" class="active">₺ ليرة</button>
-      <button data-cur="USD">$ دولار</button>
+      <button data-cur="TRY" class="active" data-i18n="curTRY">₺ ليرة</button>
+      <button data-cur="USD" data-i18n="curUSD">$ دولار</button>
+    </div>
+    <div class="lang-switch" id="langSwitch">
+      <button data-lang="ar" class="active" onclick="setLocale('ar')">AR</button>
+      <button data-lang="en" onclick="setLocale('en')">EN</button>
     </div>
     <div class="acct-wrap">
       <button class="acct-btn" id="acctBtn" onclick="onAccountClick(event)">
-        👤 <span id="acctLabel">حسابي</span>
+        👤 <span id="acctLabel" data-i18n="account">حسابي</span>
       </button>
       <div class="acct-menu" id="acctMenu">
         <div class="mi-head" id="acctMenuHead"></div>
-        <button onclick="openUserDash()">📋 لوحة حسابي</button>
-        <button id="adminMenuItem" onclick="openAdminDash()" style="display:none;">🛠️ لوحة الإدارة</button>
-        <button onclick="logout()">🚪 تسجيل الخروج</button>
+        <button onclick="openUserDash()" data-i18n="accountDash">📋 لوحة حسابي</button>
+        <button id="adminMenuItem" onclick="openAdminDash()" style="display:none;" data-i18n="adminDash">🛠️ لوحة الإدارة</button>
+        <button onclick="logout()" data-i18n="logout">🚪 تسجيل الخروج</button>
       </div>
     </div>
     <button class="cart-btn" onclick="openCart()">
-      🛒 السلة
+      <span data-i18n="cartBtn">🛒 السلة</span>
       <span class="cart-count" id="cartCount">0</span>
     </button>
   </div>
@@ -778,14 +783,14 @@
 
 <!-- ===== الواجهة الرئيسية ===== -->
 <section class="hero">
-  <h1>أحلى <span class="hl">الحلويات</span> توصل لباب بيتك 🍫</h1>
-  <p>كريب، وافل، بان كيك، وكب كيك — تُحضّر طازجة عند الطلب وتوصل لك ساخنة ولذيذة.</p>
+  <h1 data-i18n-html="heroH1">أحلى <span class="hl">الحلويات</span> توصل لباب بيتك 🍫</h1>
+  <p data-i18n="heroP">كريب، وافل، بان كيك، وكب كيك — تُحضّر طازجة عند الطلب وتوصل لك ساخنة ولذيذة.</p>
   <div class="hero-badges">
-    <span class="badge">🚚 توصيل سريع</span>
-    <span class="badge">👨‍🍳 تحضير طازج</span>
-    <span class="badge">💬 الطلب عبر واتساب</span>
+    <span class="badge" data-i18n="heroBadge1">🚚 توصيل سريع</span>
+    <span class="badge" data-i18n="heroBadge2">👨‍🍳 تحضير طازج</span>
+    <span class="badge" data-i18n="heroBadge3">💬 الطلب عبر واتساب</span>
   </div>
-  <button class="hero-cta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+  <button class="hero-cta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})" data-i18n="heroCTA">
     اطلب الآن
   </button>
 </section>
@@ -795,58 +800,58 @@
 
 <!-- ===== القائمة ===== -->
 <div class="wrap" id="menu">
-  <h2 class="section-title">قائمة الحلويات</h2>
-  <p class="section-sub">اختر صنفك المفضل وأضِفه إلى السلة</p>
+  <h2 class="section-title" data-i18n="menuTitle">قائمة الحلويات</h2>
+  <p class="section-sub" data-i18n="menuSub">اختر صنفك المفضل وأضِفه إلى السلة</p>
   <div class="shop-toolbar">
     <div class="search-box">
       <span aria-hidden="true">🔍</span>
-      <input type="search" id="searchInput" placeholder="ابحث عن حلوى..." oninput="onSearchInput(this.value)" aria-label="بحث">
+      <input type="search" id="searchInput" data-i18n-ph="searchPh" data-i18n-aria="searchAria" placeholder="ابحث عن حلوى..." oninput="onSearchInput(this.value)" aria-label="بحث">
     </div>
-    <select id="sortSelect" class="sort-select" onchange="onSortChange(this.value)" aria-label="ترتيب">
-      <option value="default">مميّز</option>
-      <option value="priceAsc">السعر: الأقل</option>
-      <option value="priceDesc">السعر: الأعلى</option>
-      <option value="newest">الأحدث</option>
-      <option value="name">الاسم</option>
+    <select id="sortSelect" class="sort-select" onchange="onSortChange(this.value)" data-i18n-aria="sortAria" aria-label="ترتيب">
+      <option value="default" data-i18n="sortDefault">مميّز</option>
+      <option value="priceAsc" data-i18n="sortPriceAsc">السعر: الأقل</option>
+      <option value="priceDesc" data-i18n="sortPriceDesc">السعر: الأعلى</option>
+      <option value="newest" data-i18n="sortNewest">الأحدث</option>
+      <option value="name" data-i18n="sortName">الاسم</option>
     </select>
-    <button class="fav-toggle" id="favToggle" onclick="toggleFavsView()">♥ المفضّلة</button>
+    <button class="fav-toggle" id="favToggle" onclick="toggleFavsView()" data-i18n="favToggle">♥ المفضّلة</button>
   </div>
   <div class="filters" id="filters"></div>
   <div class="grid" id="productGrid"></div>
 
   <!-- شوهد مؤخراً -->
   <div id="recentWrap" style="display:none;">
-    <h2 class="section-title">شوهد مؤخراً</h2>
+    <h2 class="section-title" data-i18n="recentTitle">شوهد مؤخراً</h2>
     <div class="hscroll" id="recentRow"></div>
   </div>
 </div>
 
 <!-- ===== كيف نعمل ===== -->
 <div class="wrap">
-  <h2 class="section-title">كيف تطلب؟</h2>
-  <p class="section-sub">ثلاث خطوات بسيطة ووصلك الطلب</p>
+  <h2 class="section-title" data-i18n="stepsTitle">كيف تطلب؟</h2>
+  <p class="section-sub" data-i18n="stepsSub">ثلاث خطوات بسيطة ووصلك الطلب</p>
   <div class="steps">
-    <div class="step"><div class="ico">🍰</div><h4>1. اختر حلوياتك</h4><p>تصفّح القائمة وأضِف ما يعجبك إلى السلة.</p></div>
-    <div class="step"><div class="ico">📝</div><h4>2. أدخل بيانات التوصيل</h4><p>اكتب اسمك وعنوانك ورقم هاتفك.</p></div>
-    <div class="step"><div class="ico">💬</div><h4>3. أرسل عبر واتساب</h4><p>يصلنا طلبك مباشرة ونبدأ بالتحضير.</p></div>
+    <div class="step"><div class="ico">🍰</div><h4 data-i18n="step1H">1. اختر حلوياتك</h4><p data-i18n="step1P">تصفّح القائمة وأضِف ما يعجبك إلى السلة.</p></div>
+    <div class="step"><div class="ico">📝</div><h4 data-i18n="step2H">2. أدخل بيانات التوصيل</h4><p data-i18n="step2P">اكتب اسمك وعنوانك ورقم هاتفك.</p></div>
+    <div class="step"><div class="ico">💬</div><h4 data-i18n="step3H">3. أرسل عبر واتساب</h4><p data-i18n="step3P">يصلنا طلبك مباشرة ونبدأ بالتحضير.</p></div>
   </div>
 </div>
 
 <footer>
-  <div class="f-logo">🧁 حلا بيت</div>
+  <div class="f-logo"><span>🧁</span> <span data-i18n="storeName">حلا بيت</span></div>
   <div class="f-row">
     <span>📞 0790 000 000</span>
-    <span>🕐 يومياً 10ص — 12م</span>
-    <span>📍 خدمة توصيل داخل المدينة</span>
+    <span data-i18n="footerHours">🕐 يومياً 10ص — 12م</span>
+    <span data-i18n="footerArea">📍 خدمة توصيل داخل المدينة</span>
   </div>
-  <div class="copy">© 2026 حلا بيت — جميع الحقوق محفوظة</div>
+  <div class="copy" data-i18n="footerCopy">© 2026 حلا بيت — جميع الحقوق محفوظة</div>
 </footer>
 
 <!-- ===== السلة ===== -->
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
-    <h3>🛒 سلة الطلبات</h3>
+    <h3 data-i18n="cartTitle">🛒 سلة الطلبات</h3>
     <button class="close-x" onclick="closeCart()">✕</button>
   </div>
   <div class="drawer-body">
@@ -854,39 +859,39 @@
     <div id="orderArea" style="display:none;">
       <div class="order-form">
         <div class="login-hint" id="loginHint">
-          <a onclick="openAuth()">سجّل دخولك</a> ليتم حفظ الطلب في حسابك وتتبّعه لاحقاً.
+          <a onclick="openAuth()" data-i18n="loginHintLink">سجّل دخولك</a><span data-i18n="loginHintPost"> ليتم حفظ الطلب في حسابك وتتبّعه لاحقاً.</span>
         </div>
-        <h4>🚚 بيانات التوصيل</h4>
+        <h4 data-i18n="deliveryInfoH">🚚 بيانات التوصيل</h4>
         <div class="field" id="f-savedaddr" style="display:none;">
-          <label>عناوينك المحفوظة</label>
+          <label data-i18n="savedAddrL">عناوينك المحفوظة</label>
           <select id="savedAddr"></select>
         </div>
         <div class="field" id="f-name">
-          <label>الاسم الكامل *</label>
-          <input type="text" id="custName" placeholder="مثال: أحمد محمد" />
-          <div class="err-msg">يرجى إدخال الاسم</div>
+          <label data-i18n="fullNameL">الاسم الكامل *</label>
+          <input type="text" id="custName" data-i18n-ph="fullNamePh" placeholder="مثال: أحمد محمد" />
+          <div class="err-msg" data-i18n="fullNameErr">يرجى إدخال الاسم</div>
         </div>
         <div class="field" id="f-phone">
-          <label>رقم الهاتف *</label>
-          <input type="tel" id="custPhone" placeholder="مثال: 0790000000" inputmode="tel" />
-          <div class="err-msg">يرجى إدخال رقم هاتف صحيح</div>
+          <label data-i18n="phoneL">رقم الهاتف *</label>
+          <input type="tel" id="custPhone" data-i18n-ph="phonePh" placeholder="مثال: 0790000000" inputmode="tel" />
+          <div class="err-msg" data-i18n="phoneErr">يرجى إدخال رقم هاتف صحيح</div>
         </div>
         <div class="field" id="f-address">
-          <label>عنوان التوصيل *</label>
-          <textarea id="custAddress" placeholder="المنطقة، الشارع، رقم البناية، أقرب نقطة دالة"></textarea>
-          <div class="err-msg">يرجى إدخال العنوان</div>
+          <label data-i18n="addressL">عنوان التوصيل *</label>
+          <textarea id="custAddress" data-i18n-ph="addressPh" placeholder="المنطقة، الشارع، رقم البناية، أقرب نقطة دالة"></textarea>
+          <div class="err-msg" data-i18n="addressErr">يرجى إدخال العنوان</div>
         </div>
         <div class="field">
-          <label>طريقة الدفع</label>
+          <label data-i18n="payL">طريقة الدفع</label>
           <select id="payMethod">
-            <option value="نقداً عند الاستلام">نقداً عند الاستلام</option>
-            <option value="تحويل بنكي">تحويل بنكي</option>
-            <option value="محفظة إلكترونية">محفظة إلكترونية</option>
+            <option value="نقداً عند الاستلام" data-i18n="payCash">نقداً عند الاستلام</option>
+            <option value="تحويل بنكي" data-i18n="payBank">تحويل بنكي</option>
+            <option value="محفظة إلكترونية" data-i18n="payWallet">محفظة إلكترونية</option>
           </select>
         </div>
         <div class="field">
-          <label>ملاحظات إضافية (اختياري)</label>
-          <textarea id="custNotes" placeholder="مثال: بدون مكسرات، وقت التوصيل المفضّل..."></textarea>
+          <label data-i18n="notesL">ملاحظات إضافية (اختياري)</label>
+          <textarea id="custNotes" data-i18n-ph="notesPh" placeholder="مثال: بدون مكسرات، وقت التوصيل المفضّل..."></textarea>
         </div>
       </div>
       <div class="summary" id="summary"></div>
@@ -894,9 +899,9 @@
   </div>
   <div class="drawer-foot">
     <button class="wa-btn" id="waBtn" onclick="sendOrder()">
-      <span style="font-size:20px;">💬</span> تأكيد الطلب وإرساله عبر واتساب
+      <span style="font-size:20px;">💬</span> <span data-i18n="waBtn">تأكيد الطلب وإرساله عبر واتساب</span>
     </button>
-    <div class="foot-note">سيُحفظ الطلب في النظام ثم يُفتح واتساب بتفاصيله</div>
+    <div class="foot-note" data-i18n="waFootNote">سيُحفظ الطلب في النظام ثم يُفتح واتساب بتفاصيله</div>
   </div>
 </aside>
 
@@ -904,29 +909,29 @@
 <div class="modal-ov" id="authModal">
   <div class="modal">
     <div class="modal-head">
-      <h3>👤 حساب حلا بيت</h3>
+      <h3 data-i18n="authTitle">👤 حساب حلا بيت</h3>
       <button class="close-x" onclick="closeAuth()">✕</button>
     </div>
     <div class="auth-tabs">
-      <button id="tabLogin" class="active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-      <button id="tabSignup" onclick="switchAuthTab('signup')">إنشاء حساب</button>
+      <button id="tabLogin" class="active" onclick="switchAuthTab('login')" data-i18n="authLogin">تسجيل الدخول</button>
+      <button id="tabSignup" onclick="switchAuthTab('signup')" data-i18n="authSignup">إنشاء حساب</button>
     </div>
 
     <div class="auth-form" id="loginForm">
       <div class="auth-msg" id="loginMsg"></div>
-      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@mail.com" /></div>
-      <div class="field"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
-      <button class="primary-btn" onclick="doLogin()">دخول</button>
-      <div class="auth-note">حساب الإدارة التجريبي: admin@halabeit.com / admin123</div>
+      <div class="field"><label data-i18n="emailL">البريد الإلكتروني</label><input type="email" id="loginEmail" placeholder="example@mail.com" /></div>
+      <div class="field"><label data-i18n="passL">كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
+      <button class="primary-btn" onclick="doLogin()" data-i18n="loginBtn">دخول</button>
+      <div class="auth-note" data-i18n="adminDemo">حساب الإدارة التجريبي: admin@halabeit.com / admin123</div>
     </div>
 
     <div class="auth-form" id="signupForm" style="display:none;">
       <div class="auth-msg" id="signupMsg"></div>
-      <div class="field"><label>الاسم الكامل</label><input type="text" id="suName" placeholder="اسمك" /></div>
-      <div class="field"><label>البريد الإلكتروني</label><input type="email" id="suEmail" placeholder="example@mail.com" /></div>
-      <div class="field"><label>رقم الهاتف</label><input type="tel" id="suPhone" placeholder="0790000000" inputmode="tel" /></div>
-      <div class="field"><label>كلمة المرور</label><input type="password" id="suPass" placeholder="6 خانات على الأقل" /></div>
-      <button class="primary-btn" onclick="doSignup()">إنشاء الحساب</button>
+      <div class="field"><label data-i18n="suNameL">الاسم الكامل</label><input type="text" id="suName" data-i18n-ph="suNamePh" placeholder="اسمك" /></div>
+      <div class="field"><label data-i18n="emailL">البريد الإلكتروني</label><input type="email" id="suEmail" placeholder="example@mail.com" /></div>
+      <div class="field"><label data-i18n="phoneL">رقم الهاتف</label><input type="tel" id="suPhone" data-i18n-ph="suPhonePh" placeholder="0790000000" inputmode="tel" /></div>
+      <div class="field"><label data-i18n="passL">كلمة المرور</label><input type="password" id="suPass" data-i18n-ph="suPassPh" placeholder="6 خانات على الأقل" /></div>
+      <button class="primary-btn" onclick="doSignup()" data-i18n="signupBtn">إنشاء الحساب</button>
     </div>
   </div>
 </div>
@@ -934,16 +939,16 @@
 <!-- ===== لوحة العميل ===== -->
 <div class="dash" id="userDash">
   <div class="dash-bar">
-    <div class="d-title">📋 لوحة حسابي</div>
+    <div class="d-title" data-i18n="udTitle">📋 لوحة حسابي</div>
     <div class="d-spacer"></div>
     <div class="d-user" id="userDashName"></div>
-    <button class="d-close" onclick="closeUserDash()">✕ العودة للمتجر</button>
+    <button class="d-close" onclick="closeUserDash()" data-i18n="udBack">✕ العودة للمتجر</button>
   </div>
   <div class="dash-body">
     <nav class="dash-nav" id="userDashNav">
-      <button data-tab="orders" class="active">📦 طلباتي</button>
-      <button data-tab="profile">👤 ملفي الشخصي</button>
-      <button data-tab="address">📍 عناويني</button>
+      <button data-tab="orders" class="active" data-i18n="udTabOrders">📦 طلباتي</button>
+      <button data-tab="profile" data-i18n="udTabProfile">👤 ملفي الشخصي</button>
+      <button data-tab="address" data-i18n="udTabAddress">📍 عناويني</button>
     </nav>
     <div class="dash-content" id="userDashContent"></div>
   </div>
@@ -952,17 +957,17 @@
 <!-- ===== لوحة الإدارة ===== -->
 <div class="dash" id="adminDash">
   <div class="dash-bar">
-    <div class="d-title">🛠️ لوحة إدارة حلا بيت</div>
+    <div class="d-title" data-i18n="adTitle">🛠️ لوحة إدارة حلا بيت</div>
     <div class="d-spacer"></div>
-    <button class="d-close" onclick="closeAdminDash()">✕ العودة للمتجر</button>
+    <button class="d-close" onclick="closeAdminDash()" data-i18n="udBack">✕ العودة للمتجر</button>
   </div>
   <div class="dash-body">
     <nav class="dash-nav" id="adminDashNav">
-      <button data-tab="overview" class="active">📊 نظرة عامة</button>
-      <button data-tab="orders">🧾 الطلبات</button>
-      <button data-tab="products">🧁 المنتجات</button>
-      <button data-tab="customers">👥 العملاء</button>
-      <button data-tab="settings">⚙️ الإعدادات</button>
+      <button data-tab="overview" class="active" data-i18n="adTabOverview">📊 نظرة عامة</button>
+      <button data-tab="orders" data-i18n="adTabOrders">🧾 الطلبات</button>
+      <button data-tab="products" data-i18n="adTabProducts">🧁 المنتجات</button>
+      <button data-tab="customers" data-i18n="adTabCustomers">👥 العملاء</button>
+      <button data-tab="settings" data-i18n="adTabSettings">⚙️ الإعدادات</button>
     </nav>
     <div class="dash-content" id="adminDashContent"></div>
   </div>
@@ -971,7 +976,7 @@
 <!-- ===== نافذة تفاصيل المنتج ===== -->
 <div class="pm-ov" id="productModal" onclick="if(event.target===this) closeProductModal()">
   <div class="pm">
-    <button class="pm-close" onclick="closeProductModal()" aria-label="إغلاق">✕</button>
+    <button class="pm-close" onclick="closeProductModal()" data-i18n-aria="pmCloseAria" aria-label="إغلاق">✕</button>
     <div class="pm-gallery">
       <div class="pm-main" id="pmMain"></div>
       <div class="pm-thumbs" id="pmThumbs"></div>
@@ -984,12 +989,12 @@
       <div class="pm-price" id="pmPrice"></div>
       <div class="pm-actions">
         <div class="qty pm-qty">
-          <button onclick="pmQty(1)" aria-label="زيادة">+</button>
+          <button onclick="pmQty(1)" data-i18n-aria="pmIncAria" aria-label="زيادة">+</button>
           <span id="pmQtyVal">1</span>
-          <button onclick="pmQty(-1)" aria-label="إنقاص">−</button>
+          <button onclick="pmQty(-1)" data-i18n-aria="pmDecAria" aria-label="إنقاص">−</button>
         </div>
-        <button class="pm-add" id="pmAdd" onclick="pmAddToCart()">أضف للسلة</button>
-        <button class="fav-heart pm-heart" id="pmFav" onclick="toggleFav(pmCurrentId)" aria-label="مفضّلة">♥</button>
+        <button class="pm-add" id="pmAdd" onclick="pmAddToCart()" data-i18n="pmAdd">أضف للسلة</button>
+        <button class="fav-heart pm-heart" id="pmFav" onclick="toggleFav(pmCurrentId)" data-i18n-aria="pmFavAria" aria-label="مفضّلة">♥</button>
       </div>
     </div>
   </div>
@@ -998,16 +1003,16 @@
 
 <!-- ===== الشريط السفلي (موبايل) ===== -->
 <nav class="bottom-nav" id="bottomNav">
-  <button onclick="bnHome()"><span class="bn-ic">🏠</span><small>الرئيسية</small></button>
-  <button onclick="bnSearch()"><span class="bn-ic">🔍</span><small>بحث</small></button>
-  <button onclick="bnFavs()"><span class="bn-ic">♥</span><small>المفضّلة</small><i class="bn-badge" id="bnFavBadge"></i></button>
-  <button onclick="openCart()"><span class="bn-ic">🛒</span><small>السلة</small><i class="bn-badge" id="bnCartBadge"></i></button>
-  <button onclick="onAccountClick(event)"><span class="bn-ic">👤</span><small>حسابي</small></button>
+  <button onclick="bnHome()"><span class="bn-ic">🏠</span><small data-i18n="bnHome">الرئيسية</small></button>
+  <button onclick="bnSearch()"><span class="bn-ic">🔍</span><small data-i18n="bnSearch">بحث</small></button>
+  <button onclick="bnFavs()"><span class="bn-ic">♥</span><small data-i18n="bnFavs">المفضّلة</small><i class="bn-badge" id="bnFavBadge"></i></button>
+  <button onclick="openCart()"><span class="bn-ic">🛒</span><small data-i18n="bnCart">السلة</small><i class="bn-badge" id="bnCartBadge"></i></button>
+  <button onclick="onAccountClick(event)"><span class="bn-ic">👤</span><small data-i18n="bnAcct">حسابي</small></button>
 </nav>
 
 <!-- ===== زر واتساب العائم ===== -->
 <a id="waFab" class="wa-fab" href="#" target="_blank" rel="noopener noreferrer"
-   aria-label="تواصل معنا عبر واتساب" title="تواصل معنا عبر واتساب">
+   data-i18n-aria="waFabAria" data-i18n-title="waFabAria" aria-label="تواصل معنا عبر واتساب" title="تواصل معنا عبر واتساب">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
 </a>
 
@@ -1032,7 +1037,7 @@ let STORE = { ...DEFAULT_SETTINGS };
 /* ============================================================
    مفاتيح التخزين + أدوات
    ============================================================ */
-const K = { users:"hb_users", orders:"hb_orders", products:"hb_products", session:"hb_session", settings:"hb_settings", cart:"hb_cart", theme:"hb_theme", favs:"hb_favs", recent:"hb_recent" };
+const K = { users:"hb_users", orders:"hb_orders", products:"hb_products", session:"hb_session", settings:"hb_settings", cart:"hb_cart", theme:"hb_theme", favs:"hb_favs", recent:"hb_recent", locale:"hb_locale" };
 const DB = {
   get(key, def){ try { const v = JSON.parse(localStorage.getItem(key)); return v == null ? def : v; } catch(e){ return def; } },
   set(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
@@ -1082,6 +1087,167 @@ const STATUS_COLOR = {
   "مكتمل":       { bg:"#d9f0df", fg:"#1f8a44" },
   "ملغي":        { bg:"#f7dcd8", fg:"#c0392b" }
 };
+
+/* ============================================================
+   اللغة (i18n)
+   ============================================================ */
+let locale = "ar";
+const I18N = {
+  ar: {
+    storeName:"حلا بيت", storeTagline:"حلويات طازجة كل يوم",
+    themeAria:"تبديل الوضع الليلي", themeTitle:"الوضع الليلي / النهاري",
+    install:"⤓ تثبيت", installAria:"تثبيت التطبيق",
+    curTRY:"₺ ليرة", curUSD:"$ دولار", langAr:"AR", langEn:"EN",
+    account:"حسابي", accountDash:"📋 لوحة حسابي", adminDash:"🛠️ لوحة الإدارة", logout:"🚪 تسجيل الخروج",
+    cartBtn:"🛒 السلة",
+    heroH1:'أحلى <span class="hl">الحلويات</span> توصل لباب بيتك 🍫',
+    heroP:"كريب، وافل، بان كيك، وكب كيك — تُحضّر طازجة عند الطلب وتوصل لك ساخنة ولذيذة.",
+    heroBadge1:"🚚 توصيل سريع", heroBadge2:"👨‍🍳 تحضير طازج", heroBadge3:"💬 الطلب عبر واتساب", heroCTA:"اطلب الآن",
+    menuTitle:"قائمة الحلويات", menuSub:"اختر صنفك المفضل وأضِفه إلى السلة",
+    searchPh:"ابحث عن حلوى...", searchAria:"بحث", sortAria:"ترتيب",
+    sortDefault:"مميّز", sortPriceAsc:"السعر: الأقل", sortPriceDesc:"السعر: الأعلى", sortNewest:"الأحدث", sortName:"الاسم",
+    favToggle:"♥ المفضّلة", recentTitle:"شوهد مؤخراً",
+    emptyCat:"لا توجد منتجات مطابقة.", emptyFavs:"لا منتجات في المفضّلة بعد ♥",
+    cat_all:"الكل", cat_crepe:"كريب", cat_waffle:"وافل", cat_pancake:"بان كيك", cat_cupcake:"كب كيك",
+    addBtn:"+ أضف", soldOut:"نفد",
+    badgeBs:"🔥 الأكثر مبيعاً", badgeNew:"✨ جديد", badgeLowPrefix:"متبقّي ",
+    favHeartAria:"إضافة للمفضّلة", favTitle:"المفضّلة",
+    pmCloseAria:"إغلاق", pmIncAria:"زيادة", pmDecAria:"إنقاص", pmFavAria:"مفضّلة",
+    pmAdd:"أضف للسلة", pmUnavail:"غير متوفّر",
+    stepsTitle:"كيف تطلب؟", stepsSub:"ثلاث خطوات بسيطة ووصلك الطلب",
+    step1H:"1. اختر حلوياتك", step1P:"تصفّح القائمة وأضِف ما يعجبك إلى السلة.",
+    step2H:"2. أدخل بيانات التوصيل", step2P:"اكتب اسمك وعنوانك ورقم هاتفك.",
+    step3H:"3. أرسل عبر واتساب", step3P:"يصلنا طلبك مباشرة ونبدأ بالتحضير.",
+    footerHours:"🕐 يومياً 10ص — 12م", footerArea:"📍 خدمة توصيل داخل المدينة",
+    footerCopy:"© 2026 حلا بيت — جميع الحقوق محفوظة",
+    bnHome:"الرئيسية", bnSearch:"بحث", bnFavs:"المفضّلة", bnCart:"السلة", bnAcct:"حسابي",
+    cartTitle:"🛒 سلة الطلبات", cartEmpty:"السلة فارغة", cartEmptySub:"أضف بعض الحلويات لتبدأ طلبك 🧁",
+    loginHintPre:"", loginHintLink:"سجّل دخولك", loginHintPost:" ليتم حفظ الطلب في حسابك وتتبّعه لاحقاً.",
+    deliveryInfoH:"🚚 بيانات التوصيل", savedAddrL:"عناوينك المحفوظة",
+    fullNameL:"الاسم الكامل *", fullNamePh:"مثال: أحمد محمد", fullNameErr:"يرجى إدخال الاسم",
+    phoneL:"رقم الهاتف *", phonePh:"مثال: 0790000000", phoneErr:"يرجى إدخال رقم هاتف صحيح",
+    addressL:"عنوان التوصيل *", addressPh:"المنطقة، الشارع، رقم البناية، أقرب نقطة دالة", addressErr:"يرجى إدخال العنوان",
+    payL:"طريقة الدفع", payCash:"نقداً عند الاستلام", payBank:"تحويل بنكي", payWallet:"محفظة إلكترونية",
+    notesL:"ملاحظات إضافية (اختياري)", notesPh:"مثال: بدون مكسرات، وقت التوصيل المفضّل...",
+    waBtn:"تأكيد الطلب وإرساله عبر واتساب",
+    waFootNote:"سيُحفظ الطلب في النظام ثم يُفتح واتساب بتفاصيله",
+    cartSubtotal:"المجموع الفرعي", cartDeliveryFee:"رسوم التوصيل", cartTotal:"الإجمالي", cartItemsH:"المنتجات",
+    t_added:'أُضيف "{name}" إلى السلة 🛒',
+    t_addedFav:"أُضيف للمفضّلة ♥", t_removedFav:"أُزيل من المفضّلة",
+    t_unavailable:"هذا المنتج غير متوفّر حالياً", t_unavailShort:"غير متوفّر",
+    t_stockLimit:"الكمية المتوفّرة {n} فقط ⚠️",
+    t_emptyCart:"السلة فارغة 🛒", t_completeForm:"يرجى إكمال بيانات التوصيل ⚠️",
+    t_orderReceived:"تم استلام طلبك {ref} ✅",
+    t_welcome:"أهلاً بك {name} 🎉", t_welcomeBack:"مرحباً بعودتك {name} 👋", t_loggedOut:"تم تسجيل الخروج",
+    t_installed:"تم تثبيت التطبيق 🎉",
+    authTitle:"👤 حساب حلا بيت", authLogin:"تسجيل الدخول", authSignup:"إنشاء حساب",
+    emailL:"البريد الإلكتروني", passL:"كلمة المرور", loginBtn:"دخول",
+    adminDemo:"حساب الإدارة التجريبي: admin@halabeit.com / admin123",
+    suNameL:"الاسم الكامل", suNamePh:"اسمك",
+    suPhonePh:"0790000000", suPassPh:"6 خانات على الأقل", signupBtn:"إنشاء الحساب",
+    udTitle:"📋 لوحة حسابي", udBack:"✕ العودة للمتجر",
+    udTabOrders:"📦 طلباتي", udTabProfile:"👤 ملفي الشخصي", udTabAddress:"📍 عناويني",
+    adTitle:"🛠️ لوحة إدارة حلا بيت",
+    adTabOverview:"📊 نظرة عامة", adTabOrders:"🧾 الطلبات", adTabProducts:"🧁 المنتجات",
+    adTabCustomers:"👥 العملاء", adTabSettings:"⚙️ الإعدادات",
+    s_new:"جديد", s_prep:"قيد التحضير", s_deliv:"قيد التوصيل", s_done:"مكتمل", s_cancel:"ملغي",
+    adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
+    waFabAria:"تواصل معنا عبر واتساب"
+  },
+  en: {
+    storeName:"Hala Bayt", storeTagline:"Fresh desserts every day",
+    themeAria:"Toggle dark mode", themeTitle:"Dark / Light mode",
+    install:"⤓ Install", installAria:"Install app",
+    curTRY:"₺ TRY", curUSD:"$ USD", langAr:"AR", langEn:"EN",
+    account:"Account", accountDash:"📋 My account", adminDash:"🛠️ Admin panel", logout:"🚪 Log out",
+    cartBtn:"🛒 Cart",
+    heroH1:'Sweetest <span class="hl">desserts</span> delivered to your door 🍫',
+    heroP:"Crepes, waffles, pancakes & cupcakes — made fresh on order and delivered hot.",
+    heroBadge1:"🚚 Fast delivery", heroBadge2:"👨‍🍳 Made fresh", heroBadge3:"💬 Order on WhatsApp", heroCTA:"Order now",
+    menuTitle:"Sweet menu", menuSub:"Pick your favorite and add it to the cart",
+    searchPh:"Search desserts…", searchAria:"Search", sortAria:"Sort",
+    sortDefault:"Featured", sortPriceAsc:"Price: low to high", sortPriceDesc:"Price: high to low", sortNewest:"Newest", sortName:"Name",
+    favToggle:"♥ Favorites", recentTitle:"Recently viewed",
+    emptyCat:"No matching products.", emptyFavs:"No favorites yet ♥",
+    cat_all:"All", cat_crepe:"Crepes", cat_waffle:"Waffles", cat_pancake:"Pancakes", cat_cupcake:"Cupcakes",
+    addBtn:"+ Add", soldOut:"Out",
+    badgeBs:"🔥 Best seller", badgeNew:"✨ New", badgeLowPrefix:"Only ",
+    favHeartAria:"Add to favorites", favTitle:"Favorites",
+    pmCloseAria:"Close", pmIncAria:"Increase", pmDecAria:"Decrease", pmFavAria:"Favorite",
+    pmAdd:"Add to cart", pmUnavail:"Unavailable",
+    stepsTitle:"How to order?", stepsSub:"Three simple steps and your order is on the way",
+    step1H:"1. Pick your treats", step1P:"Browse the menu and add what you love to the cart.",
+    step2H:"2. Enter delivery details", step2P:"Fill in your name, address, and phone.",
+    step3H:"3. Send via WhatsApp", step3P:"We receive it instantly and start preparing.",
+    footerHours:"🕐 Daily 10 AM — 12 AM", footerArea:"📍 Delivery within the city",
+    footerCopy:"© 2026 Hala Bayt — All rights reserved",
+    bnHome:"Home", bnSearch:"Search", bnFavs:"Favorites", bnCart:"Cart", bnAcct:"Account",
+    cartTitle:"🛒 Order cart", cartEmpty:"Cart is empty", cartEmptySub:"Add some treats to start your order 🧁",
+    loginHintPre:"", loginHintLink:"Log in", loginHintPost:" to save the order in your account and track it later.",
+    deliveryInfoH:"🚚 Delivery details", savedAddrL:"Saved addresses",
+    fullNameL:"Full name *", fullNamePh:"e.g. Ahmad Mohammad", fullNameErr:"Please enter your name",
+    phoneL:"Phone *", phonePh:"e.g. 0790000000", phoneErr:"Please enter a valid phone",
+    addressL:"Delivery address *", addressPh:"Area, street, building, nearest landmark", addressErr:"Please enter an address",
+    payL:"Payment method", payCash:"Cash on delivery", payBank:"Bank transfer", payWallet:"E-wallet",
+    notesL:"Extra notes (optional)", notesPh:"e.g. No nuts, preferred delivery time…",
+    waBtn:"Confirm & send via WhatsApp",
+    waFootNote:"The order is saved, then WhatsApp opens with the details",
+    cartSubtotal:"Subtotal", cartDeliveryFee:"Delivery fee", cartTotal:"Total", cartItemsH:"Items",
+    t_added:'"{name}" added to cart 🛒',
+    t_addedFav:"Added to favorites ♥", t_removedFav:"Removed from favorites",
+    t_unavailable:"This product is currently unavailable", t_unavailShort:"Unavailable",
+    t_stockLimit:"Only {n} in stock ⚠️",
+    t_emptyCart:"Cart is empty 🛒", t_completeForm:"Please complete the delivery details ⚠️",
+    t_orderReceived:"Order received {ref} ✅",
+    t_welcome:"Welcome {name} 🎉", t_welcomeBack:"Welcome back, {name} 👋", t_loggedOut:"Logged out",
+    t_installed:"App installed 🎉",
+    authTitle:"👤 Hala Bayt account", authLogin:"Log in", authSignup:"Sign up",
+    emailL:"Email", passL:"Password", loginBtn:"Log in",
+    adminDemo:"Demo admin: admin@halabeit.com / admin123",
+    suNameL:"Full name", suNamePh:"Your name",
+    suPhonePh:"0790000000", suPassPh:"At least 6 characters", signupBtn:"Create account",
+    udTitle:"📋 My account", udBack:"✕ Back to shop",
+    udTabOrders:"📦 My orders", udTabProfile:"👤 Profile", udTabAddress:"📍 Addresses",
+    adTitle:"🛠️ Hala Bayt admin",
+    adTabOverview:"📊 Overview", adTabOrders:"🧾 Orders", adTabProducts:"🧁 Products",
+    adTabCustomers:"👥 Customers", adTabSettings:"⚙️ Settings",
+    s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
+    adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
+    waFabAria:"Contact us on WhatsApp"
+  }
+};
+function t(key, vars){
+  let s = (I18N[locale] && I18N[locale][key]) || (I18N.ar && I18N.ar[key]) || key;
+  if (vars) for (const k in vars) s = s.replace("{"+k+"}", vars[k]);
+  return s;
+}
+function loadLocale(){ locale = DB.get(K.locale, "ar"); }
+function applyI18n(){
+  document.documentElement.lang = locale;
+  document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll("#langSwitch button").forEach(b => b.classList.toggle("active", b.dataset.lang === locale));
+}
+function setLocale(loc){
+  if (!I18N[loc]) return;
+  locale = loc;
+  DB.set(K.locale, loc);
+  applyI18n();
+  renderFilters(); renderProducts(); renderStories(); renderRecent();
+  renderCart(); updateCartCount(); updateAccountUI(); updateWaFab(); updateFavBadge();
+  const ud = document.getElementById("userDash");
+  const ad = document.getElementById("adminDash");
+  if (ud && ud.classList.contains("open")) renderUserTab(currentUserTab);
+  if (ad && ad.classList.contains("open")) renderAdminTab(currentAdminTab);
+}
+function statusLabel(s){
+  const map = { "جديد":"s_new","قيد التحضير":"s_prep","قيد التوصيل":"s_deliv","مكتمل":"s_done","ملغي":"s_cancel" };
+  return map[s] ? t(map[s]) : s;
+}
 
 /* ============================================================
    تهيئة البيانات
@@ -1184,7 +1350,11 @@ function fmtDate(iso){
 /* ============================================================
    عرض القائمة والمنتجات
    ============================================================ */
-function catName(id){ const c = CATEGORIES.find(x => x.id === id); return c ? c.name : ""; }
+function catName(id){
+  const key = "cat_" + id;
+  if (I18N[locale] && I18N[locale][key]) return t(key);
+  const c = CATEGORIES.find(x => x.id === id); return c ? c.name : "";
+}
 
 /* ===== مساعدات المنتج: صور / خصم / مخزون / شارات ===== */
 function prodImgs(p){ return (p.imgs && p.imgs.length) ? p.imgs : (p.img ? [p.img] : []); }
@@ -1200,11 +1370,11 @@ function lowStock(p){ return typeof p.stock === "number" && p.stock > 0 && p.sto
 
 function badgesMarkup(p){
   let b = "";
-  if (p.bestseller)     b += `<span class="pbadge bs">🔥 الأكثر مبيعاً</span>`;
-  if (p.isNew)          b += `<span class="pbadge nw">✨ جديد</span>`;
+  if (p.bestseller)     b += `<span class="pbadge bs">${esc(t("badgeBs"))}</span>`;
+  if (p.isNew)          b += `<span class="pbadge nw">${esc(t("badgeNew"))}</span>`;
   if (hasDiscount(p))   b += `<span class="pbadge disc">-${discountPct(p)}%</span>`;
-  if (!inStock(p))      b += `<span class="pbadge out">نفد</span>`;
-  else if (lowStock(p)) b += `<span class="pbadge low">متبقّي ${p.stock}</span>`;
+  if (!inStock(p))      b += `<span class="pbadge out">${esc(t("soldOut"))}</span>`;
+  else if (lowStock(p)) b += `<span class="pbadge low">${esc(t("badgeLowPrefix"))}${p.stock}</span>`;
   return b;
 }
 function priceMarkup(p){
@@ -1223,7 +1393,7 @@ function toggleFav(id){
   updateFavBadge();
   const f = document.getElementById("pmFav");
   if (f && Number(f.dataset.id) === id) f.classList.toggle("on", isFav(id));
-  showToast(isFav(id) ? "أُضيف للمفضّلة ♥" : "أُزيل من المفضّلة");
+  showToast(isFav(id) ? t("t_addedFav") : t("t_removedFav"));
 }
 function updateFavBadge(){
   const b = document.getElementById("bnFavBadge");
@@ -1274,7 +1444,7 @@ function renderFilters(){
   CATEGORIES.forEach(c => {
     const b = document.createElement("button");
     b.className = "filter-btn" + (c.id === activeCat ? " active" : "");
-    b.innerHTML = `<span>${c.icon}</span> ${c.name}`;
+    b.innerHTML = `<span>${c.icon}</span> ${esc(catName(c.id))}`;
     b.onclick = () => { activeCat = c.id; renderFilters(); renderProducts(); };
     box.appendChild(b);
   });
@@ -1284,7 +1454,7 @@ function renderProducts(){
   const grid = document.getElementById("productGrid");
   const list = filteredProducts();
   if (list.length === 0){
-    grid.innerHTML = `<div class="empty-note">${showFavsOnly ? "لا منتجات في المفضّلة بعد ♥" : "لا توجد منتجات مطابقة."}</div>`;
+    grid.innerHTML = `<div class="empty-note">${esc(showFavsOnly ? t("emptyFavs") : t("emptyCat"))}</div>`;
     return;
   }
   grid.innerHTML = "";
@@ -1297,7 +1467,7 @@ function renderProducts(){
       <div class="thumb">
         ${thumbMarkup(p)}
         ${bm ? `<div class="pbadges">${bm}</div>` : ""}
-        <button class="fav-heart ${isFav(p.id) ? "on" : ""}" aria-label="إضافة للمفضّلة" title="المفضّلة">♥</button>
+        <button class="fav-heart ${isFav(p.id) ? "on" : ""}" aria-label="${esc(t("favHeartAria"))}" title="${esc(t("favTitle"))}">♥</button>
       </div>
       <div class="body">
         <span class="cat-tag">${esc(catName(p.cat))}</span>
@@ -1305,7 +1475,7 @@ function renderProducts(){
         <p class="desc">${esc(p.desc || "")}</p>
         <div class="price-row">
           <div class="price-wrap">${priceMarkup(p)}</div>
-          <button class="add-btn" ${out ? "disabled" : ""}>${out ? "نفد" : "+ أضف"}</button>
+          <button class="add-btn" ${out ? "disabled" : ""}>${esc(out ? t("soldOut") : t("addBtn"))}</button>
         </div>
       </div>`;
     card.onclick = (e) => {
@@ -1354,7 +1524,7 @@ function renderProductModal(){
   const add = document.getElementById("pmAdd");
   const out = !inStock(p);
   add.disabled = out;
-  add.textContent = out ? "غير متوفّر" : "أضف للسلة";
+  add.textContent = out ? t("pmUnavail") : t("pmAdd");
 }
 function pmSetImg(i){ pmImgIndex = i; renderProductModal(); }
 function pmQty(d){
@@ -1366,12 +1536,12 @@ function pmQty(d){
 function pmAddToCart(){
   const p = products.find(x => x.id === pmCurrentId);
   if (!p) return;
-  if (!inStock(p)){ showToast("غير متوفّر"); return; }
+  if (!inStock(p)){ showToast(t("t_unavailShort")); return; }
   let target = (cart[pmCurrentId] || 0) + pmQtyVal;
   if (p.stock != null) target = Math.min(target, p.stock);
   cart[pmCurrentId] = target;
   saveCart(); updateCartCount(); renderCart();
-  showToast(`أُضيف "${p.name}" إلى السلة 🛒`);
+  showToast(t("t_added", { name: p.name }));
   closeProductModal();
 }
 function closeProductModal(){
@@ -1442,18 +1612,18 @@ function bnFavs(){
    ============================================================ */
 function addToCart(id){
   const p = products.find(x => x.id === id);
-  if (p && !inStock(p)){ showToast("هذا المنتج غير متوفّر حالياً"); return; }
-  if (p && p.stock != null && (cart[id] || 0) >= p.stock){ showToast(`الكمية المتوفّرة ${p.stock} فقط ⚠️`); return; }
+  if (p && !inStock(p)){ showToast(t("t_unavailable")); return; }
+  if (p && p.stock != null && (cart[id] || 0) >= p.stock){ showToast(t("t_stockLimit", { n: p.stock })); return; }
   cart[id] = (cart[id] || 0) + 1;
   saveCart();
   updateCartCount();
   renderCart();
-  if (p) showToast(`أُضيف "${p.name}" إلى السلة 🛒`);
+  if (p) showToast(t("t_added", { name: p.name }));
 }
 function changeQty(id, delta){
   if (!cart[id]) return;
   const p = products.find(x => x.id === id);
-  if (delta > 0 && p && p.stock != null && cart[id] >= p.stock){ showToast(`الكمية المتوفّرة ${p.stock} فقط ⚠️`); return; }
+  if (delta > 0 && p && p.stock != null && cart[id] >= p.stock){ showToast(t("t_stockLimit", { n: p.stock })); return; }
   cart[id] += delta;
   if (cart[id] <= 0) delete cart[id];
   saveCart();
@@ -1485,8 +1655,8 @@ function renderCart(){
     box.innerHTML = `
       <div class="cart-empty">
         <div class="big">🍩</div>
-        <p>سلتك فارغة</p>
-        <p style="font-size:13px;">أضِف بعض الحلويات اللذيذة لتبدأ طلبك</p>
+        <p>${esc(t("cartEmpty"))}</p>
+        <p style="font-size:13px;">${esc(t("cartEmptySub"))}</p>
       </div>`;
     orderArea.style.display = "none";
     waBtn.disabled = true;
@@ -1512,9 +1682,9 @@ function renderCart(){
 function renderSummary(){
   const sub = subtotalTRY(), delivery = STORE.deliveryFeeTRY, total = sub + delivery;
   document.getElementById("summary").innerHTML = `
-    <div class="line"><span>المجموع الفرعي</span><span>${fmt(sub)}</span></div>
-    <div class="line"><span>رسوم التوصيل</span><span>${fmt(delivery)}</span></div>
-    <div class="line total"><span>الإجمالي</span><span class="amt">${fmt(total)}</span></div>`;
+    <div class="line"><span>${esc(t("cartSubtotal"))}</span><span>${fmt(sub)}</span></div>
+    <div class="line"><span>${esc(t("cartDeliveryFee"))}</span><span>${fmt(delivery)}</span></div>
+    <div class="line total"><span>${esc(t("cartTotal"))}</span><span class="amt">${fmt(total)}</span></div>`;
 }
 
 function refreshCheckoutForm(){
@@ -1531,7 +1701,7 @@ function refreshCheckoutForm(){
     if (!phoneEl.value) phoneEl.value = u.phone || "";
     if (u.addresses && u.addresses.length){
       savedWrap.style.display = "block";
-      savedSel.innerHTML = `<option value="">— كتابة عنوان جديد —</option>` +
+      savedSel.innerHTML = `<option value="">${esc(t("savedAddrNew"))}</option>` +
         u.addresses.map((a,i) => `<option value="${i}">${esc(a.label)} — ${esc(a.text)}</option>`).join("");
     } else {
       savedWrap.style.display = "none";
@@ -1595,8 +1765,8 @@ function nextOrderId(){
 }
 function sendOrder(){
   const items = cartItemsList();
-  if (items.length === 0){ showToast("السلة فارغة 🛒"); return; }
-  if (!validateForm()){ showToast("يرجى إكمال بيانات التوصيل ⚠️"); return; }
+  if (items.length === 0){ showToast(t("t_emptyCart")); return; }
+  if (!validateForm()){ showToast(t("t_completeForm")); return; }
 
   const u = currentUser();
   const name    = document.getElementById("custName").value.trim();
@@ -1640,7 +1810,7 @@ function sendOrder(){
   document.getElementById("custAddress").value = "";
   document.getElementById("custNotes").value = "";
   updateCartCount(); renderCart(); closeCart();
-  showToast(`تم استلام طلبك ${ref} ✅`);
+  showToast(t("t_orderReceived", { ref }));
 }
 
 /* ============================================================
@@ -1679,7 +1849,7 @@ function doSignup(){
   DB.set(K.users, users);
   DB.set(K.session, user.id);
   closeAuth(); updateAccountUI();
-  showToast(`أهلاً بك ${name} 🎉`);
+  showToast(t("t_welcome", { name }));
 }
 function doLogin(){
   const email = document.getElementById("loginEmail").value.trim().toLowerCase();
@@ -1689,14 +1859,14 @@ function doLogin(){
   if (!user || user.password !== pass){ msg.textContent = "البريد أو كلمة المرور غير صحيحة"; return; }
   DB.set(K.session, user.id);
   closeAuth(); updateAccountUI();
-  showToast(`مرحباً بعودتك ${user.name} 👋`);
+  showToast(t("t_welcomeBack", { name: user.name }));
 }
 function logout(){
   localStorage.removeItem(K.session);
   closeUserDash(); closeAdminDash();
   document.getElementById("acctMenu").classList.remove("open");
   updateAccountUI();
-  showToast("تم تسجيل الخروج");
+  showToast(t("t_loggedOut"));
 }
 
 function onAccountClick(e){
@@ -1717,10 +1887,12 @@ function updateAccountUI(){
   const head = document.getElementById("acctMenuHead");
   if (u){
     label.textContent = u.name.split(" ")[0];
-    head.textContent = u.role === "admin" ? "👑 " + u.name + " (إدارة)" : "👋 " + u.name;
+    label.removeAttribute("data-i18n");
+    head.textContent = u.role === "admin" ? "👑 " + u.name + " (" + t("adminBadge") + ")" : "👋 " + u.name;
     adminItem.style.display = u.role === "admin" ? "block" : "none";
   } else {
-    label.textContent = "حسابي";
+    label.setAttribute("data-i18n", "account");
+    label.textContent = t("account");
     document.getElementById("acctMenu").classList.remove("open");
   }
   refreshCheckoutForm();
@@ -1965,7 +2137,7 @@ function renderAdminTab(tab){
         <div class="prod-add">
           <div class="field"><label>الاسم</label><input type="text" id="npName" placeholder="اسم المنتج"></div>
           <div class="field"><label>التصنيف</label><select id="npCat">
-            ${PROD_CATS.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}</select></div>
+            ${PROD_CATS.map(c => `<option value="${c.id}">${esc(catName(c.id))}</option>`).join("")}</select></div>
           <div class="field"><label>السعر (₺)</label><input type="number" id="npPrice" placeholder="0" min="0"></div>
           <div class="field"><label>قبل الخصم (₺)</label><input type="number" id="npOldPrice" placeholder="اختياري" min="0"></div>
           <div class="field"><label>المخزون</label><input type="number" id="npStock" placeholder="غير محدود" min="0"></div>
@@ -1999,7 +2171,7 @@ function renderAdminTab(tab){
           </td>
           <td><input type="text" id="pe-name-${p.id}" value="${esc(p.name)}"></td>
           <td><select id="pe-cat-${p.id}">
-            ${PROD_CATS.map(c => `<option value="${c.id}" ${c.id===p.cat?"selected":""}>${c.name}</option>`).join("")}
+            ${PROD_CATS.map(c => `<option value="${c.id}" ${c.id===p.cat?"selected":""}>${esc(catName(c.id))}</option>`).join("")}
           </select></td>
           <td><input type="number" id="pe-price-${p.id}" value="${p.priceTRY}" min="0" style="width:78px;"></td>
           <td><input type="number" id="pe-old-${p.id}" value="${p.oldPriceTRY != null ? p.oldPriceTRY : ''}" min="0" placeholder="—" style="width:78px;"></td>
@@ -2260,6 +2432,7 @@ function showToast(text){
    ============================================================ */
 initData();
 loadSettings();
+loadLocale();
 loadProducts();
 loadCart();
 loadFavs();
@@ -2274,6 +2447,7 @@ updateFavBadge();
 updateAccountUI();
 updateWaFab();
 applyThemeIcon();
+applyI18n();
 
 /* ===== PWA: التثبيت + Service Worker ===== */
 let deferredPrompt = null;
@@ -2296,7 +2470,7 @@ window.addEventListener("appinstalled", () => {
   deferredPrompt = null;
   const b = document.getElementById("installBtn");
   if (b) b.classList.remove("show");
-  showToast("تم تثبيت التطبيق 🎉");
+  showToast(t("t_installed"));
 });
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
