@@ -761,6 +761,7 @@
     </div>
     <div class="lang-switch" id="langSwitch">
       <button data-lang="ar" class="active" onclick="setLocale('ar')">AR</button>
+      <button data-lang="tr" onclick="setLocale('tr')">TR</button>
       <button data-lang="en" onclick="setLocale('en')">EN</button>
     </div>
     <div class="acct-wrap">
@@ -1214,6 +1215,67 @@ const I18N = {
     s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
     waFabAria:"Contact us on WhatsApp"
+  },
+  tr: {
+    storeName:"Hala Bayt", storeTagline:"Her gün taze tatlılar",
+    themeAria:"Karanlık modu değiştir", themeTitle:"Karanlık / Aydınlık mod",
+    install:"⤓ Yükle", installAria:"Uygulamayı yükle",
+    curTRY:"₺ TL", curUSD:"$ USD", langAr:"AR", langEn:"EN",
+    account:"Hesabım", accountDash:"📋 Hesap panelim", adminDash:"🛠️ Yönetim paneli", logout:"🚪 Çıkış yap",
+    cartBtn:"🛒 Sepet",
+    heroH1:'En lezzetli <span class="hl">tatlılar</span> kapınıza kadar 🍫',
+    heroP:"Krep, waffle, pankek ve cupcake — sipariş üzerine taze hazırlanır, sıcak teslim edilir.",
+    heroBadge1:"🚚 Hızlı teslimat", heroBadge2:"👨‍🍳 Taze hazırlık", heroBadge3:"💬 WhatsApp ile sipariş", heroCTA:"Hemen sipariş ver",
+    menuTitle:"Tatlı menüsü", menuSub:"Favorini seç ve sepete ekle",
+    searchPh:"Tatlı ara…", searchAria:"Ara", sortAria:"Sırala",
+    sortDefault:"Öne çıkanlar", sortPriceAsc:"Fiyat: artan", sortPriceDesc:"Fiyat: azalan", sortNewest:"En yeni", sortName:"İsim",
+    favToggle:"♥ Favoriler", recentTitle:"Son görüntülenenler",
+    emptyCat:"Eşleşen ürün yok.", emptyFavs:"Henüz favori yok ♥",
+    cat_all:"Tümü", cat_crepe:"Krep", cat_waffle:"Waffle", cat_pancake:"Pankek", cat_cupcake:"Cupcake",
+    addBtn:"+ Ekle", soldOut:"Tükendi",
+    badgeBs:"🔥 En çok satan", badgeNew:"✨ Yeni", badgeLowPrefix:"Son ",
+    favHeartAria:"Favorilere ekle", favTitle:"Favoriler",
+    pmCloseAria:"Kapat", pmIncAria:"Arttır", pmDecAria:"Azalt", pmFavAria:"Favori",
+    pmAdd:"Sepete ekle", pmUnavail:"Mevcut değil",
+    stepsTitle:"Nasıl sipariş verilir?", stepsSub:"Üç basit adım ve siparişin yolda",
+    step1H:"1. Tatlılarını seç", step1P:"Menüye göz at, beğendiklerini sepete ekle.",
+    step2H:"2. Teslimat bilgilerini gir", step2P:"İsmini, adresini ve telefonunu yaz.",
+    step3H:"3. WhatsApp ile gönder", step3P:"Siparişin bize ulaşır, hazırlamaya başlarız.",
+    footerHours:"🕐 Her gün 10:00 — 24:00", footerArea:"📍 Şehir içi teslimat",
+    footerCopy:"© 2026 Hala Bayt — Tüm hakları saklıdır",
+    bnHome:"Ana sayfa", bnSearch:"Ara", bnFavs:"Favoriler", bnCart:"Sepet", bnAcct:"Hesabım",
+    cartTitle:"🛒 Sipariş sepeti", cartEmpty:"Sepet boş", cartEmptySub:"Siparişine başlamak için biraz tatlı ekle 🧁",
+    loginHintPre:"", loginHintLink:"Giriş yap", loginHintPost:" — siparişin hesabında saklanır ve daha sonra takip edebilirsin.",
+    deliveryInfoH:"🚚 Teslimat bilgileri", savedAddrL:"Kayıtlı adreslerin",
+    fullNameL:"Ad soyad *", fullNamePh:"Örn: Ahmet Yılmaz", fullNameErr:"Lütfen adını gir",
+    phoneL:"Telefon *", phonePh:"Örn: 05XX XXX XX XX", phoneErr:"Lütfen geçerli bir telefon gir",
+    addressL:"Teslimat adresi *", addressPh:"Mahalle, sokak, bina no, en yakın nokta", addressErr:"Lütfen adresini gir",
+    payL:"Ödeme yöntemi", payCash:"Kapıda nakit", payBank:"Banka havalesi", payWallet:"Dijital cüzdan",
+    notesL:"Ek not (isteğe bağlı)", notesPh:"Örn: fındıksız, tercih edilen teslimat saati…",
+    waBtn:"Onayla & WhatsApp ile gönder",
+    waFootNote:"Sipariş kaydedilir, ardından detaylarla WhatsApp açılır",
+    cartSubtotal:"Ara toplam", cartDeliveryFee:"Teslimat ücreti", cartTotal:"Toplam", cartItemsH:"Ürünler",
+    t_added:'"{name}" sepete eklendi 🛒',
+    t_addedFav:"Favorilere eklendi ♥", t_removedFav:"Favorilerden çıkarıldı",
+    t_unavailable:"Bu ürün şu anda mevcut değil", t_unavailShort:"Mevcut değil",
+    t_stockLimit:"Sadece {n} adet stokta ⚠️",
+    t_emptyCart:"Sepet boş 🛒", t_completeForm:"Lütfen teslimat bilgilerini tamamla ⚠️",
+    t_orderReceived:"Sipariş alındı {ref} ✅",
+    t_welcome:"Hoş geldin {name} 🎉", t_welcomeBack:"Tekrar hoş geldin, {name} 👋", t_loggedOut:"Çıkış yapıldı",
+    t_installed:"Uygulama yüklendi 🎉",
+    authTitle:"👤 Hala Bayt hesabı", authLogin:"Giriş yap", authSignup:"Üye ol",
+    emailL:"E-posta", passL:"Şifre", loginBtn:"Giriş",
+    adminDemo:"Demo yönetici: admin@halabeit.com / admin123",
+    suNameL:"Ad soyad", suNamePh:"Adın",
+    suPhonePh:"05XX XXX XX XX", suPassPh:"En az 6 karakter", signupBtn:"Hesap oluştur",
+    udTitle:"📋 Hesap panelim", udBack:"✕ Mağazaya dön",
+    udTabOrders:"📦 Siparişlerim", udTabProfile:"👤 Profilim", udTabAddress:"📍 Adreslerim",
+    adTitle:"🛠️ Hala Bayt yönetim",
+    adTabOverview:"📊 Genel bakış", adTabOrders:"🧾 Siparişler", adTabProducts:"🧁 Ürünler",
+    adTabCustomers:"👥 Müşteriler", adTabSettings:"⚙️ Ayarlar",
+    s_new:"Yeni", s_prep:"Hazırlanıyor", s_deliv:"Yolda", s_done:"Tamamlandı", s_cancel:"İptal edildi",
+    adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
+    waFabAria:"WhatsApp ile bize ulaş"
   }
 };
 function t(key, vars){
