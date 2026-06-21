@@ -729,8 +729,34 @@
   :root.dark .pm-add { background: linear-gradient(120deg,#4a3122,#6f4e37); color: #fff; }
   :root.dark .pm-add:hover { background: var(--gold); color: #2e1c14; }
 
+  /* ===== نافذة الترحيب + مشغّل الإنشاد ===== */
+  .welcome-ov { position: fixed; inset: 0; background: rgba(20,12,8,.72); z-index: 170; display: none; align-items: center; justify-content: center; padding: 22px; backdrop-filter: blur(4px); }
+  .welcome-ov.open { display: flex; }
+  .welcome { background: var(--bg); border-radius: 22px; padding: 28px 26px 24px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 16px 50px rgba(0,0,0,.4); animation: welcomeIn .35s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes welcomeIn { from { transform: translateY(20px) scale(.94); opacity: 0; } to { transform: none; opacity: 1; } }
+  .welcome-emoji { font-size: 54px; line-height: 1; margin-bottom: 8px; }
+  .welcome h2 { font-size: 22px; font-weight: 900; color: var(--brown-900); margin-bottom: 8px; }
+  .welcome p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 22px; }
+  .welcome-actions { display: flex; gap: 10px; }
+  .welcome-play { flex: 1; background: linear-gradient(120deg,var(--gold),#e0a868); color: #2e1c14; font-weight: 900; font-size: 15px; padding: 13px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; transition: .15s; }
+  .welcome-play:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(218,165,32,.35); }
+  .welcome-skip { background: transparent; color: var(--muted); font-weight: 700; font-size: 14px; padding: 13px 16px; border-radius: 14px; border: 2px solid var(--cream); }
+  .welcome-skip:hover { background: var(--cream); }
+
+  .mini-player { position: fixed; top: 78px; right: 16px; z-index: 88; background: var(--card); border: 1.5px solid var(--cream); border-radius: 30px; padding: 5px 12px 5px 6px; display: none; align-items: center; gap: 8px; box-shadow: 0 6px 18px rgba(46,28,20,.18); }
+  .mini-player.show { display: inline-flex; }
+  .mini-pp { width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: #2e1c14; font-size: 14px; line-height: 1; display: grid; place-items: center; }
+  .mini-label { font-size: 12px; font-weight: 800; color: var(--brown-700); white-space: nowrap; }
+  .mini-x { width: 22px; height: 22px; border-radius: 50%; background: transparent; color: var(--muted); font-size: 12px; }
+  .mini-x:hover { background: var(--cream); color: var(--brown-700); }
+  :root.dark .welcome { background: #1c130d; }
+  :root.dark .welcome-skip { border-color: #33271d; }
+  :root.dark .welcome-skip:hover { background: #2a1f16; }
+  :root.dark .mini-player { background: #2a1f16; border-color: #3a2c1d; }
+
   /* ===== موبايل ===== */
   @media (max-width: 720px){
+    .mini-player { top: auto; bottom: 78px; right: 12px; }
     .bottom-nav { display: flex; }
     body { padding-bottom: 64px; }
     .wa-fab { bottom: 78px; }
@@ -1011,6 +1037,29 @@
   <button onclick="onAccountClick(event)"><span class="bn-ic">👤</span><small data-i18n="bnAcct">حسابي</small></button>
 </nav>
 
+<!-- ===== نافذة ترحيب (أول دخول) لتشغيل الإنشاد ===== -->
+<div class="welcome-ov" id="welcomeOv" onclick="if(event.target===this) dismissWelcome()">
+  <div class="welcome">
+    <div class="welcome-emoji">🌙</div>
+    <h2 data-i18n="welcomeTitle">أهلاً بك في حلا بيت</h2>
+    <p data-i18n="welcomeBody">هل تحب الاستماع إلى إنشاد «كعبة هاجلر هو دير الله»؟</p>
+    <div class="welcome-actions">
+      <button class="welcome-play" onclick="acceptWelcomeMusic()">
+        <span>▶</span> <span data-i18n="welcomePlay">تشغيل</span>
+      </button>
+      <button class="welcome-skip" onclick="dismissWelcome()" data-i18n="welcomeSkip">لاحقاً</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgAudio" preload="none" src="kabede.mp3" loop></audio>
+
+<div class="mini-player" id="miniPlayer" role="region" aria-live="polite">
+  <button class="mini-pp" onclick="toggleBgAudio()" id="bgAudioBtn" aria-label="تشغيل/إيقاف">⏸</button>
+  <span class="mini-label" data-i18n="nasheedLabel">🎵 إنشاد</span>
+  <button class="mini-x" onclick="hideMiniPlayer()" aria-label="إخفاء">✕</button>
+</div>
+
 <!-- ===== زر واتساب العائم ===== -->
 <a id="waFab" class="wa-fab" href="#" target="_blank" rel="noopener noreferrer"
    data-i18n-aria="waFabAria" data-i18n-title="waFabAria" aria-label="تواصل معنا عبر واتساب" title="تواصل معنا عبر واتساب">
@@ -1153,6 +1202,10 @@ const I18N = {
     adTabCustomers:"👥 العملاء", adTabSettings:"⚙️ الإعدادات",
     s_new:"جديد", s_prep:"قيد التحضير", s_deliv:"قيد التوصيل", s_done:"مكتمل", s_cancel:"ملغي",
     adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
+    welcomeTitle:"أهلاً بك في حلا بيت 🌙",
+    welcomeBody:"هل تحب الاستماع إلى إنشاد «كعبة هاجلر هو دير الله»؟",
+    welcomePlay:"تشغيل", welcomeSkip:"لاحقاً",
+    nasheedLabel:"🎵 إنشاد", audioErr:"تعذّر تشغيل الإنشاد ⚠️",
     waFabAria:"تواصل معنا عبر واتساب"
   },
   en: {
@@ -1214,6 +1267,10 @@ const I18N = {
     adTabCustomers:"👥 Customers", adTabSettings:"⚙️ Settings",
     s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
+    welcomeTitle:"Welcome to Hala Bayt 🌙",
+    welcomeBody:"Would you like to listen to the nasheed “Kâbede hacılar Hû der Allah”?",
+    welcomePlay:"Play", welcomeSkip:"Maybe later",
+    nasheedLabel:"🎵 Nasheed", audioErr:"Couldn't play the nasheed ⚠️",
     waFabAria:"Contact us on WhatsApp"
   },
   tr: {
@@ -1275,6 +1332,10 @@ const I18N = {
     adTabCustomers:"👥 Müşteriler", adTabSettings:"⚙️ Ayarlar",
     s_new:"Yeni", s_prep:"Hazırlanıyor", s_deliv:"Yolda", s_done:"Tamamlandı", s_cancel:"İptal edildi",
     adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
+    welcomeTitle:"Hala Bayt'a hoş geldin 🌙",
+    welcomeBody:"«Kâbede hacılar Hû der Allah» ilahisini dinlemek ister misin?",
+    welcomePlay:"Çal", welcomeSkip:"Belki sonra",
+    nasheedLabel:"🎵 İlahi", audioErr:"İlahi çalınamadı ⚠️",
     waFabAria:"WhatsApp ile bize ulaş"
   }
 };
@@ -1306,6 +1367,50 @@ function setLocale(loc){
   if (ud && ud.classList.contains("open")) renderUserTab(currentUserTab);
   if (ad && ad.classList.contains("open")) renderAdminTab(currentAdminTab);
 }
+/* ===== نافذة الترحيب + إنشاد الخلفية ===== */
+const K_WELCOMED = "hb_welcomed";
+function maybeShowWelcome(){
+  if (localStorage.getItem(K_WELCOMED)) return;
+  const ov = document.getElementById("welcomeOv");
+  if (!ov) return;
+  ov.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function dismissWelcome(){
+  const ov = document.getElementById("welcomeOv");
+  if (ov) ov.classList.remove("open");
+  document.body.style.overflow = "";
+  try { localStorage.setItem(K_WELCOMED, "1"); } catch(e){}
+}
+function acceptWelcomeMusic(){
+  dismissWelcome();
+  const a = document.getElementById("bgAudio");
+  if (!a) return;
+  a.volume = 0.55;
+  const p = a.play();
+  if (p && p.catch) p.catch(() => showToast(t("audioErr")));
+  document.getElementById("miniPlayer").classList.add("show");
+  document.getElementById("bgAudioBtn").textContent = "⏸";
+}
+function toggleBgAudio(){
+  const a = document.getElementById("bgAudio");
+  const btn = document.getElementById("bgAudioBtn");
+  if (!a) return;
+  if (a.paused){
+    const p = a.play();
+    if (p && p.catch) p.catch(() => showToast(t("audioErr")));
+    btn.textContent = "⏸";
+  } else {
+    a.pause();
+    btn.textContent = "▶";
+  }
+}
+function hideMiniPlayer(){
+  const a = document.getElementById("bgAudio");
+  if (a) a.pause();
+  document.getElementById("miniPlayer").classList.remove("show");
+}
+
 function statusLabel(s){
   const map = { "جديد":"s_new","قيد التحضير":"s_prep","قيد التوصيل":"s_deliv","مكتمل":"s_done","ملغي":"s_cancel" };
   return map[s] ? t(map[s]) : s;
@@ -2510,6 +2615,7 @@ updateAccountUI();
 updateWaFab();
 applyThemeIcon();
 applyI18n();
+maybeShowWelcome();
 
 /* ===== PWA: التثبيت + Service Worker ===== */
 let deferredPrompt = null;
