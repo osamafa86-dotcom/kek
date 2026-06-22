@@ -1074,7 +1074,7 @@
    يمكن تعديلها مباشرة من: لوحة الإدارة ← ⚙️ الإعدادات
    ============================================================ */
 const DEFAULT_SETTINGS = {
-  whatsapp: "962790000000",   // رقم واتساب المتجر بصيغة دولية بدون + أو 00
+  whatsapp: "905059933343",   // رقم واتساب المتجر بصيغة دولية بدون + أو 00
   deliveryFeeTRY: 25,         // رسوم التوصيل بالليرة التركية
   usdRate: 38                 // كم ليرة تركية تساوي 1 دولار
 };
@@ -1462,7 +1462,14 @@ function loadProducts(){
 }
 function loadFavs(){ favs = DB.get(K.favs, []); }
 function loadRecent(){ recent = DB.get(K.recent, []); }
-function loadSettings(){ STORE = { ...DEFAULT_SETTINGS, ...DB.get(K.settings, {}) }; }
+function loadSettings(){
+  STORE = { ...DEFAULT_SETTINGS, ...DB.get(K.settings, {}) };
+  // ترقية تلقائية: المتصفحات اللي حافظة رقم الواتساب الافتراضي القديم تنتقل للجديد
+  if (STORE.whatsapp === "962790000000"){
+    STORE.whatsapp = DEFAULT_SETTINGS.whatsapp;
+    try { DB.set(K.settings, STORE); } catch(e){}
+  }
+}
 
 /* حفظ السلة في المتصفح حتى لا تضيع عند تحديث الصفحة */
 function saveCart(){ DB.set(K.cart, cart); }
