@@ -184,7 +184,10 @@
   }
   .section-sub { text-align: center; color: var(--muted); margin-bottom: 26px; }
 
-  .filters { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 34px; }
+  .filters { display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 28px; padding-bottom: 8px; -webkit-overflow-scrolling: touch; scroll-padding: 16px; }
+  .filters::-webkit-scrollbar { height: 6px; }
+  .filters::-webkit-scrollbar-thumb { background: var(--gold-soft); border-radius: 3px; }
+  .filter-btn { flex-shrink: 0; }
   .filter-btn {
     background: var(--card); color: var(--brown-700); font-weight: 700; font-size: 14px;
     padding: 10px 20px; border-radius: 30px; border: 2px solid var(--cream);
@@ -1103,11 +1106,28 @@ function esc(s){
    التصنيفات والمنتجات الافتراضية
    ============================================================ */
 const CATEGORIES = [
-  { id: "all",     name: "الكل",    icon: "🍽️" },
-  { id: "crepe",   name: "كريب",    icon: "🌯" },
-  { id: "waffle",  name: "وافل",    icon: "🧇" },
-  { id: "pancake", name: "بان كيك", icon: "🥞" },
-  { id: "cupcake", name: "كب كيك",  icon: "🧁" }
+  { id: "all",       name: "الكل",       icon: "🍽️" },
+  { id: "crepe",     name: "كريب",       icon: "🌯" },
+  { id: "waffle",    name: "وافل",       icon: "🧇" },
+  { id: "pancake",   name: "بان كيك",    icon: "🥞" },
+  { id: "cupcake",   name: "كب كيك",     icon: "🧁" },
+  { id: "cake",      name: "كيك",        icon: "🎂" },
+  { id: "cheesecake",name: "تشيز كيك",   icon: "🍰" },
+  { id: "tiramisu",  name: "تيراميسو",   icon: "🍮" },
+  { id: "baklava",   name: "بقلاوة",     icon: "🥮" },
+  { id: "knafeh",    name: "كنافة",      icon: "🧀" },
+  { id: "basbousa",  name: "بسبوسة",     icon: "🍯" },
+  { id: "ice_cream", name: "آيس كريم",   icon: "🍨" },
+  { id: "donut",     name: "دونات",      icon: "🍩" },
+  { id: "cookie",    name: "كوكيز",      icon: "🍪" },
+  { id: "macaron",   name: "ماكرون",     icon: "🍬" },
+  { id: "chocolate", name: "شوكولاتة",   icon: "🍫" },
+  { id: "coffee",    name: "قهوة",       icon: "☕" },
+  { id: "tea",       name: "شاي",        icon: "🍵" },
+  { id: "juice",     name: "عصير",       icon: "🧃" },
+  { id: "borek",     name: "بوريك",      icon: "🥐" },
+  { id: "toast",     name: "توست",       icon: "🥪" },
+  { id: "salad",     name: "سلطة",       icon: "🥗" }
 ];
 const PROD_CATS = CATEGORIES.filter(c => c.id !== "all");
 
@@ -1161,6 +1181,12 @@ const I18N = {
     favToggle:"♥ المفضّلة", recentTitle:"شوهد مؤخراً",
     emptyCat:"لا توجد منتجات مطابقة.", emptyFavs:"لا منتجات في المفضّلة بعد ♥",
     cat_all:"الكل", cat_crepe:"كريب", cat_waffle:"وافل", cat_pancake:"بان كيك", cat_cupcake:"كب كيك",
+    cat_cake:"كيك", cat_cheesecake:"تشيز كيك", cat_tiramisu:"تيراميسو",
+    cat_baklava:"بقلاوة", cat_knafeh:"كنافة", cat_basbousa:"بسبوسة",
+    cat_ice_cream:"آيس كريم", cat_donut:"دونات", cat_cookie:"كوكيز",
+    cat_macaron:"ماكرون", cat_chocolate:"شوكولاتة",
+    cat_coffee:"قهوة", cat_tea:"شاي", cat_juice:"عصير",
+    cat_borek:"بوريك", cat_toast:"توست", cat_salad:"سلطة",
     addBtn:"+ أضف", soldOut:"نفد",
     badgeBs:"🔥 الأكثر مبيعاً", badgeNew:"✨ جديد", badgeLowPrefix:"متبقّي ",
     favHeartAria:"إضافة للمفضّلة", favTitle:"المفضّلة",
@@ -1226,6 +1252,12 @@ const I18N = {
     favToggle:"♥ Favorites", recentTitle:"Recently viewed",
     emptyCat:"No matching products.", emptyFavs:"No favorites yet ♥",
     cat_all:"All", cat_crepe:"Crepes", cat_waffle:"Waffles", cat_pancake:"Pancakes", cat_cupcake:"Cupcakes",
+    cat_cake:"Cakes", cat_cheesecake:"Cheesecake", cat_tiramisu:"Tiramisu",
+    cat_baklava:"Baklava", cat_knafeh:"Knafeh", cat_basbousa:"Basbousa",
+    cat_ice_cream:"Ice cream", cat_donut:"Donuts", cat_cookie:"Cookies",
+    cat_macaron:"Macarons", cat_chocolate:"Chocolate",
+    cat_coffee:"Coffee", cat_tea:"Tea", cat_juice:"Juice",
+    cat_borek:"Börek", cat_toast:"Toasts", cat_salad:"Salads",
     addBtn:"+ Add", soldOut:"Out",
     badgeBs:"🔥 Best seller", badgeNew:"✨ New", badgeLowPrefix:"Only ",
     favHeartAria:"Add to favorites", favTitle:"Favorites",
@@ -1291,6 +1323,12 @@ const I18N = {
     favToggle:"♥ Favoriler", recentTitle:"Son görüntülenenler",
     emptyCat:"Eşleşen ürün yok.", emptyFavs:"Henüz favori yok ♥",
     cat_all:"Tümü", cat_crepe:"Krep", cat_waffle:"Waffle", cat_pancake:"Pankek", cat_cupcake:"Cupcake",
+    cat_cake:"Kek", cat_cheesecake:"Cheesecake", cat_tiramisu:"Tiramisu",
+    cat_baklava:"Baklava", cat_knafeh:"Künefe", cat_basbousa:"Revani",
+    cat_ice_cream:"Dondurma", cat_donut:"Donut", cat_cookie:"Kurabiye",
+    cat_macaron:"Makaron", cat_chocolate:"Çikolata",
+    cat_coffee:"Kahve", cat_tea:"Çay", cat_juice:"Meyve suyu",
+    cat_borek:"Börek", cat_toast:"Tost", cat_salad:"Salata",
     addBtn:"+ Ekle", soldOut:"Tükendi",
     badgeBs:"🔥 En çok satan", badgeNew:"✨ Yeni", badgeLowPrefix:"Son ",
     favHeartAria:"Favorilere ekle", favTitle:"Favoriler",
