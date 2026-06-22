@@ -614,7 +614,10 @@
     display: grid; place-items: center; background: var(--cream); font-size: 24px;
   }
   .pe-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .pe-emoji-in { width: 54px !important; text-align: center; }
+  .pe-emoji-in { width: 64px !important; text-align: center; }
+  .emoji-pick { font-size: 18px; padding: 7px 10px; border: 2px solid var(--cream); border-radius: 10px; background: var(--card); color: var(--text); cursor: pointer; min-width: 70px; text-align: center; }
+  .emoji-pick:focus { outline: none; border-color: var(--gold); }
+  :root.dark .emoji-pick { background: #2a1f16; border-color: #3a2c1d; }
   .pe-upload { cursor: pointer; padding: 4px 10px; font-size: 15px; }
   .pe-rmimg { background: #f7dcd8; color: #c0392b; font-size: 11px; padding: 3px 8px; border-radius: 8px; white-space: nowrap; }
   .np-preview { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; display: none; margin-top: 6px; }
@@ -2356,7 +2359,7 @@ function renderAdminTab(tab){
           <div class="field"><label>قبل الخصم (₺)</label><input type="number" id="npOldPrice" placeholder="اختياري" min="0"></div>
           <div class="field"><label>المخزون</label><input type="number" id="npStock" placeholder="غير محدود" min="0"></div>
           <div class="field"><label>الوصف</label><input type="text" id="npDesc" placeholder="وصف قصير"></div>
-          <div class="field"><label>الرمز (احتياطي)</label><input type="text" id="npEmoji" placeholder="🧁" maxlength="4"></div>
+          <div class="field"><label>الرمز (احتياطي)</label>${emojiSelectMarkup("npEmoji", "🧁")}</div>
           <div class="field"><label>شارات</label>
             <div class="chk-row">
               <label><input type="checkbox" id="npBestseller"> 🔥 الأكثر مبيعاً</label>
@@ -2381,7 +2384,7 @@ function renderAdminTab(tab){
         html += `<tr>
           <td>
             <div class="pe-imgs" id="pe-imgs-${p.id}"></div>
-            <input type="text" id="pe-emoji-${p.id}" value="${esc(p.emoji)}" maxlength="4" class="pe-emoji-in" title="رمز احتياطي">
+            ${emojiSelectMarkup("pe-emoji-"+p.id, p.emoji, "pe-emoji-in")}
           </td>
           <td><input type="text" id="pe-name-${p.id}" value="${esc(p.name)}"></td>
           <td><select id="pe-cat-${p.id}">
@@ -2479,6 +2482,24 @@ function deleteOrder(id){
 }
 function nextProductId(){
   return products.reduce((m,p) => Math.max(m, p.id), 0) + 1;
+}
+
+/* قائمة الرموز الجاهزة لخانة «الرمز» في إضافة/تعديل المنتج */
+const EMOJI_OPTIONS = [
+  "🧁","🎂","🍰","🥮","🍮","🍯","🍪","🍩","🍫","🍬","🍭","🍦","🍨","🍧","🥧",
+  "🌯","🧇","🥞","🥐","🥨","🥯","🍞","🥖",
+  "🍓","🍒","🍑","🫐","🍇","🥝","🥥","🍌","🍎","🍐","🍍","🍊","🍋","🥭",
+  "🥜","🌰","🧀","🧈","🥛",
+  "☕","🍵","🧃","🥤","🧋",
+  "🥪","🍕","🥗","🌭","🌮",
+  "✨","🌟","❤️","🎉","💝"
+];
+function emojiSelectMarkup(id, current, cls=""){
+  let opts = EMOJI_OPTIONS.map(e => `<option value="${e}" ${e===current?"selected":""}>${e}</option>`).join("");
+  if (current && !EMOJI_OPTIONS.includes(current)){
+    opts = `<option value="${esc(current)}" selected>${esc(current)}</option>` + opts;
+  }
+  return `<select id="${id}" class="emoji-pick ${cls}" title="اختر رمزاً">${opts}</select>`;
 }
 
 /* ===== صور المنتجات (متعددة) ===== */
