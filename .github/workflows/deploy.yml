@@ -21,3 +21,8 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           # FTP لهذا الحساب يهبط مباشرة على جذر kek.emdatra.org، فالرفع للجذر لا لمجلد فرعي
           server-dir: ./
+          # .htaccess يضبط رؤوس الأمان، ويُستثنى افتراضياً كملف مخفي
+          exclude: |
+            **/.git*/**
+            **/.github/**
+            **/node_modules/**
