@@ -737,6 +737,29 @@
   :root.dark .pm-add { background: linear-gradient(120deg,#4a3122,#6f4e37); color: #fff; }
   :root.dark .pm-add:hover { background: var(--gold); color: #2e1c14; }
 
+  /* ===== نافذة كلمة مرور الإدارة ===== */
+  .pw-ov { position: fixed; inset: 0; background: rgba(20,12,8,.75); z-index: 180; display: none; align-items: center; justify-content: center; padding: 22px; backdrop-filter: blur(4px); }
+  .pw-ov.open { display: flex; }
+  .pw-box { background: var(--bg); border-radius: 22px; padding: 30px 26px 24px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 16px 50px rgba(0,0,0,.45); }
+  .pw-box.shake { animation: pwShake .4s; }
+  @keyframes pwShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-9px)} 40%{transform:translateX(9px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+  .pw-emoji { font-size: 46px; line-height: 1; margin-bottom: 6px; }
+  .pw-box h3 { font-size: 20px; font-weight: 900; color: var(--brown-900); margin-bottom: 6px; }
+  .pw-box p { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .pw-box input { width: 100%; padding: 13px 16px; border: 2px solid var(--cream); border-radius: 14px; background: var(--card); color: var(--text); font-size: 17px; text-align: center; letter-spacing: 3px; outline: none; transition: border-color .15s; }
+  .pw-box input:focus { border-color: var(--gold); }
+  .pw-err { display: none; color: #c0392b; font-size: 13px; font-weight: 700; margin-top: 10px; }
+  .pw-err.show { display: block; }
+  .pw-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .pw-go { flex: 1; background: linear-gradient(120deg,var(--gold),#e0a868); color: #2e1c14; font-weight: 900; font-size: 15px; padding: 13px; border-radius: 14px; transition: .15s; }
+  .pw-go:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(218,165,32,.35); }
+  .pw-cancel { background: transparent; color: var(--muted); font-weight: 700; font-size: 14px; padding: 13px 18px; border-radius: 14px; border: 2px solid var(--cream); }
+  .pw-cancel:hover { background: var(--cream); }
+  :root.dark .pw-box { background: #1c130d; }
+  :root.dark .pw-box input { background: #2a1f16; border-color: #3a2c1d; }
+  :root.dark .pw-cancel { border-color: #33271d; }
+  :root.dark .pw-cancel:hover { background: #2a1f16; }
+
   /* ===== إغلاق المتجر ===== */
   .store-closed-banner { background: linear-gradient(120deg,#c0392b,#a93226); color: #fff; text-align: center; padding: 11px 16px; font-weight: 800; font-size: 14px; box-shadow: 0 3px 12px rgba(192,57,43,.3); }
   .store-toggle { background: #2e7d32; color: #fff; font-weight: 800; font-size: 13px; padding: 9px 16px; border-radius: 30px; transition: .2s; }
@@ -1020,6 +1043,22 @@
   </div>
 </div>
 
+<!-- ===== نافذة كلمة مرور لوحة الإدارة ===== -->
+<div class="pw-ov" id="adminPwOv" onclick="if(event.target===this) closeAdminPw()">
+  <div class="pw-box">
+    <div class="pw-emoji">🔐</div>
+    <h3 data-i18n="pwTitle">كلمة مرور لوحة الإدارة</h3>
+    <p data-i18n="pwHint">أدخل كلمة المرور للمتابعة</p>
+    <input type="password" id="adminPwInput" data-i18n-ph="pwPlaceholder" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter') submitAdminPw(); if(event.key==='Escape') closeAdminPw();" autocomplete="off">
+    <div class="pw-err" id="adminPwErr" data-i18n="pwWrong">كلمة المرور غير صحيحة</div>
+    <div class="pw-actions">
+      <button class="pw-go" onclick="submitAdminPw()" data-i18n="pwEnter">دخول</button>
+      <button class="pw-cancel" onclick="closeAdminPw()" data-i18n="pwCancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== نافذة تفاصيل المنتج ===== -->
 <div class="pm-ov" id="productModal" onclick="if(event.target===this) closeProductModal()">
   <div class="pm">
@@ -1246,6 +1285,9 @@ const I18N = {
     adTabCustomers:"👥 العملاء", adTabSettings:"⚙️ الإعدادات",
     s_new:"جديد", s_prep:"قيد التحضير", s_deliv:"قيد التوصيل", s_done:"مكتمل", s_cancel:"ملغي",
     adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
+    pwTitle:"كلمة مرور لوحة الإدارة", pwHint:"أدخل كلمة المرور للمتابعة", pwPlaceholder:"••••••••",
+    pwWrong:"كلمة المرور غير صحيحة", pwEnter:"دخول", pwCancel:"إلغاء",
+    t_adminUnlocked:"مرحباً بك في لوحة الإدارة 🔓", t_adminOnly:"هذه اللوحة لمدير المتجر فقط",
     closedBanner:"🔒 المتجر مغلق حالياً — نعتذر، لا نستقبل الطلبات الآن",
     storeOpenBtn:"🔓 المتجر مفتوح", storeClosedBtn:"🔒 المتجر مغلق",
     t_storeClosed:"المتجر مغلق حالياً 🔒", t_storeOpened:"تم فتح المتجر ✅", t_storeClosedNow:"تم إغلاق المتجر 🔒",
@@ -1320,6 +1362,9 @@ const I18N = {
     adTabCustomers:"👥 Customers", adTabSettings:"⚙️ Settings",
     s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
+    pwTitle:"Admin panel password", pwHint:"Enter the password to continue", pwPlaceholder:"••••••••",
+    pwWrong:"Incorrect password", pwEnter:"Enter", pwCancel:"Cancel",
+    t_adminUnlocked:"Welcome to the admin panel 🔓", t_adminOnly:"This panel is for the store admin only",
     closedBanner:"🔒 We're currently closed — sorry, not taking orders right now",
     storeOpenBtn:"🔓 Store open", storeClosedBtn:"🔒 Store closed",
     t_storeClosed:"The store is currently closed 🔒", t_storeOpened:"Store opened ✅", t_storeClosedNow:"Store closed 🔒",
@@ -1394,6 +1439,9 @@ const I18N = {
     adTabCustomers:"👥 Müşteriler", adTabSettings:"⚙️ Ayarlar",
     s_new:"Yeni", s_prep:"Hazırlanıyor", s_deliv:"Yolda", s_done:"Tamamlandı", s_cancel:"İptal edildi",
     adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
+    pwTitle:"Yönetim paneli şifresi", pwHint:"Devam etmek için şifreyi gir", pwPlaceholder:"••••••••",
+    pwWrong:"Şifre yanlış", pwEnter:"Giriş", pwCancel:"İptal",
+    t_adminUnlocked:"Yönetim paneline hoş geldin 🔓", t_adminOnly:"Bu panel yalnızca mağaza yöneticisi içindir",
     closedBanner:"🔒 Şu anda kapalıyız — üzgünüz, şu an sipariş alamıyoruz",
     storeOpenBtn:"🔓 Mağaza açık", storeClosedBtn:"🔒 Mağaza kapalı",
     t_storeClosed:"Mağaza şu anda kapalı 🔒", t_storeOpened:"Mağaza açıldı ✅", t_storeClosedNow:"Mağaza kapatıldı 🔒",
@@ -2123,6 +2171,7 @@ function doLogin(){
 }
 function logout(){
   localStorage.removeItem(K.session);
+  adminUnlocked = false;
   closeUserDash(); closeAdminDash();
   document.getElementById("acctMenu").classList.remove("open");
   updateAccountUI();
@@ -2295,9 +2344,48 @@ function deleteAddress(i){
    لوحة الإدارة
    ============================================================ */
 let currentAdminTab = "overview";
+/* ===== بوابة كلمة المرور للوحة الإدارة ===== */
+const ADMIN_PW = "admin123";
+let adminUnlocked = false;
+
 function openAdminDash(){
   const u = currentUser();
-  if (!u || u.role !== "admin"){ showToast("هذه اللوحة لمدير المتجر فقط"); return; }
+  if (!u || u.role !== "admin"){ showToast(t("t_adminOnly")); return; }
+  if (!adminUnlocked){ askAdminPw(); return; }
+  reallyOpenAdminDash();
+}
+function askAdminPw(){
+  document.getElementById("acctMenu").classList.remove("open");
+  const inp = document.getElementById("adminPwInput");
+  const err = document.getElementById("adminPwErr");
+  inp.value = "";
+  err.classList.remove("show");
+  document.getElementById("adminPwOv").classList.add("open");
+  document.body.style.overflow = "hidden";
+  setTimeout(() => inp.focus(), 80);
+}
+function submitAdminPw(){
+  const inp = document.getElementById("adminPwInput");
+  const err = document.getElementById("adminPwErr");
+  if (inp.value === ADMIN_PW){
+    adminUnlocked = true;
+    closeAdminPw();
+    reallyOpenAdminDash();
+    showToast(t("t_adminUnlocked"));
+  } else {
+    err.classList.add("show");
+    inp.value = "";
+    inp.focus();
+    const box = inp.closest(".pw-box");
+    box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+  }
+}
+function closeAdminPw(){
+  document.getElementById("adminPwOv").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function reallyOpenAdminDash(){
   document.getElementById("acctMenu").classList.remove("open");
   currentAdminTab = "overview";
   [...document.getElementById("adminDashNav").children]
