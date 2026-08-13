@@ -737,6 +737,41 @@
   :root.dark .pm-add { background: linear-gradient(120deg,#4a3122,#6f4e37); color: #fff; }
   :root.dark .pm-add:hover { background: var(--gold); color: #2e1c14; }
 
+  /* ===== كبسة الأغاني + لوحة الأغاني ===== */
+  .music-fab { position: fixed; bottom: 22px; left: 92px; z-index: 80; width: 58px; height: 58px; border-radius: 50%;
+    background: linear-gradient(135deg,var(--gold),#e0a868); color: #2e1c14; font-size: 25px; display: grid; place-items: center;
+    box-shadow: 0 8px 22px rgba(218,165,32,.45); transition: transform .2s, box-shadow .2s, opacity .25s; }
+  .music-fab:hover { transform: scale(1.08); box-shadow: 0 12px 30px rgba(218,165,32,.6); }
+  .music-fab:active { transform: scale(.95); }
+  :root:has(.drawer.open) .music-fab, :root:has(.dash.open) .music-fab,
+  :root:has(.modal-ov.open) .music-fab, :root:has(.pm-ov.open) .music-fab,
+  :root:has(.pw-ov.open) .music-fab { opacity: 0; pointer-events: none; transform: scale(.3); }
+
+  .music-ov { position: fixed; inset: 0; background: rgba(20,12,8,.68); z-index: 155; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
+  .music-ov.open { display: flex; }
+  .music-panel { background: var(--bg); border-radius: 22px; width: 460px; max-width: 100%; max-height: 82vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 16px 50px rgba(0,0,0,.42); }
+  .music-head { display: flex; align-items: center; gap: 10px; padding: 18px 20px 12px; }
+  .music-head h3 { flex: 1; font-size: 19px; font-weight: 900; color: var(--brown-900); }
+  .music-search { display: flex; align-items: center; gap: 8px; margin: 0 20px 12px; padding: 9px 14px; background: var(--card); border: 2px solid var(--cream); border-radius: 30px; }
+  .music-search input { flex: 1; border: none; background: transparent; font-size: 14px; color: var(--text); outline: none; }
+  .track-list { overflow-y: auto; padding: 0 12px 16px; -webkit-overflow-scrolling: touch; }
+  .track { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 14px; cursor: pointer; transition: background .15s; }
+  .track:hover { background: var(--cream); }
+  .track.on { background: var(--cream); }
+  .track-ic { width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; background: var(--gold); color: #2e1c14; font-size: 13px; display: grid; place-items: center; }
+  .track-meta { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .track-meta b { font-size: 14px; font-weight: 800; color: var(--brown-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .track-meta small { font-size: 12px; color: var(--muted); }
+  .track-eq { font-size: 15px; animation: eqPulse 1.1s ease-in-out infinite; }
+  @keyframes eqPulse { 0%,100%{opacity:.4;transform:scale(.9)} 50%{opacity:1;transform:scale(1.15)} }
+  :root.dark .music-panel { background: #1c130d; }
+  :root.dark .music-search { background: #2a1f16; border-color: #3a2c1d; }
+  :root.dark .track:hover, :root.dark .track.on { background: #2a1f16; }
+  @media (max-width: 720px){
+    .music-fab { width: 52px; height: 52px; bottom: 78px; left: 78px; font-size: 22px; }
+    .music-panel { max-height: 88vh; }
+  }
+
   /* ===== نافذة كلمة مرور الإدارة ===== */
   .pw-ov { position: fixed; inset: 0; background: rgba(20,12,8,.75); z-index: 180; display: none; align-items: center; justify-content: center; padding: 22px; backdrop-filter: blur(4px); }
   .pw-ov.open { display: flex; }
@@ -1037,6 +1072,7 @@
       <button data-tab="orders" data-i18n="adTabOrders">🧾 الطلبات</button>
       <button data-tab="products" data-i18n="adTabProducts">🧁 المنتجات</button>
       <button data-tab="customers" data-i18n="adTabCustomers">👥 العملاء</button>
+      <button data-tab="music" data-i18n="adTabMusic">🎵 الأغاني</button>
       <button data-tab="settings" data-i18n="adTabSettings">⚙️ الإعدادات</button>
     </nav>
     <div class="dash-content" id="adminDashContent"></div>
@@ -1111,11 +1147,30 @@
   </div>
 </div>
 
-<audio id="bgAudio" preload="none" src="kabede.mp3" loop></audio>
+<audio id="bgAudio" preload="none"></audio>
+
+<!-- ===== كبسة الأغاني ===== -->
+<button class="music-fab" id="musicFab" onclick="openMusic()" data-i18n-aria="musicAria" data-i18n-title="musicAria" aria-label="الأغاني">🎵</button>
+
+<!-- ===== لوحة الأغاني ===== -->
+<div class="music-ov" id="musicOv" onclick="if(event.target===this) closeMusic()">
+  <div class="music-panel">
+    <div class="music-head">
+      <h3 data-i18n="musicTitle">🎵 الأغاني</h3>
+      <button class="close-x" onclick="closeMusic()">✕</button>
+    </div>
+    <div class="music-search">
+      <span aria-hidden="true">🔍</span>
+      <input type="search" id="musicSearch" data-i18n-ph="musicSearchPh" placeholder="ابحث عن أغنية..."
+             oninput="renderTracks()" data-i18n-aria="musicSearchAria" aria-label="بحث عن أغنية">
+    </div>
+    <div class="track-list" id="trackList"></div>
+  </div>
+</div>
 
 <div class="mini-player" id="miniPlayer" role="region" aria-live="polite">
   <button class="mini-pp" onclick="toggleBgAudio()" id="bgAudioBtn" aria-label="تشغيل/إيقاف">⏸</button>
-  <span class="mini-label" data-i18n="nasheedLabel">🎵 إنشاد</span>
+  <span class="mini-label" id="miniLabel">🎵</span>
   <button class="mini-x" onclick="hideMiniPlayer()" aria-label="إخفاء">✕</button>
 </div>
 
@@ -1147,7 +1202,7 @@ let STORE = { ...DEFAULT_SETTINGS };
 /* ============================================================
    مفاتيح التخزين + أدوات
    ============================================================ */
-const K = { users:"hb_users", orders:"hb_orders", products:"hb_products", session:"hb_session", settings:"hb_settings", cart:"hb_cart", theme:"hb_theme", favs:"hb_favs", recent:"hb_recent", locale:"hb_locale" };
+const K = { users:"hb_users", orders:"hb_orders", products:"hb_products", session:"hb_session", settings:"hb_settings", cart:"hb_cart", theme:"hb_theme", favs:"hb_favs", recent:"hb_recent", locale:"hb_locale", tracks:"hb_tracks" };
 const DB = {
   get(key, def){ try { const v = JSON.parse(localStorage.getItem(key)); return v == null ? def : v; } catch(e){ return def; } },
   set(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
@@ -1285,6 +1340,15 @@ const I18N = {
     adTabCustomers:"👥 العملاء", adTabSettings:"⚙️ الإعدادات",
     s_new:"جديد", s_prep:"قيد التحضير", s_deliv:"قيد التوصيل", s_done:"مكتمل", s_cancel:"ملغي",
     adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
+    musicAria:"الأغاني", musicTitle:"🎵 الأغاني", musicSearchPh:"ابحث عن أغنية...", musicSearchAria:"بحث عن أغنية",
+    musicEmpty:"لا توجد أغانٍ بعد — أضِفها من لوحة الإدارة 🎵", musicNoMatch:"لا توجد أغنية مطابقة.",
+    adTabMusic:"🎵 الأغاني", mAddTitle:"إضافة أغنية", mName:"الاسم", mNamePh:"اسم الأغنية",
+    mArtist:"المنشد / الفنان", mArtistPh:"اختياري", mSrc:"الملف أو الرابط", mAdd:"إضافة", mDel:"حذف",
+    mList:"قائمة الأغاني", or:"أو",
+    mHint:"ارفع ملف mp3 بجانب index.html واكتب اسمه، أو ضع رابطاً مباشراً لملف صوتي.",
+    mErrName:"أدخل اسم الأغنية ⚠️", mErrSrc:"أدخل اسم الملف أو الرابط ⚠️",
+    mAdded:'أُضيفت "{name}" ✅', mDeleted:"تم حذف الأغنية", mConfirmDel:'حذف الأغنية "{name}"؟',
+    t_saveFail:"تعذّر الحفظ — المساحة ممتلئة ⚠️",
     pwTitle:"كلمة مرور لوحة الإدارة", pwHint:"أدخل كلمة المرور للمتابعة", pwPlaceholder:"••••••••",
     pwWrong:"كلمة المرور غير صحيحة", pwEnter:"دخول", pwCancel:"إلغاء",
     t_adminUnlocked:"مرحباً بك في لوحة الإدارة 🔓", t_adminOnly:"هذه اللوحة لمدير المتجر فقط",
@@ -1362,6 +1426,15 @@ const I18N = {
     adTabCustomers:"👥 Customers", adTabSettings:"⚙️ Settings",
     s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
+    musicAria:"Music", musicTitle:"🎵 Music", musicSearchPh:"Search for a song…", musicSearchAria:"Search songs",
+    musicEmpty:"No songs yet — add them from the admin panel 🎵", musicNoMatch:"No matching song.",
+    adTabMusic:"🎵 Music", mAddTitle:"Add a song", mName:"Title", mNamePh:"Song title",
+    mArtist:"Artist", mArtistPh:"Optional", mSrc:"File or URL", mAdd:"Add", mDel:"Delete",
+    mList:"Song list", or:"or",
+    mHint:"Upload an mp3 next to index.html and type its name, or paste a direct link to an audio file.",
+    mErrName:"Enter a song title ⚠️", mErrSrc:"Enter a file name or URL ⚠️",
+    mAdded:'"{name}" added ✅', mDeleted:"Song deleted", mConfirmDel:'Delete "{name}"?',
+    t_saveFail:"Couldn't save — storage is full ⚠️",
     pwTitle:"Admin panel password", pwHint:"Enter the password to continue", pwPlaceholder:"••••••••",
     pwWrong:"Incorrect password", pwEnter:"Enter", pwCancel:"Cancel",
     t_adminUnlocked:"Welcome to the admin panel 🔓", t_adminOnly:"This panel is for the store admin only",
@@ -1439,6 +1512,15 @@ const I18N = {
     adTabCustomers:"👥 Müşteriler", adTabSettings:"⚙️ Ayarlar",
     s_new:"Yeni", s_prep:"Hazırlanıyor", s_deliv:"Yolda", s_done:"Tamamlandı", s_cancel:"İptal edildi",
     adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
+    musicAria:"Müzik", musicTitle:"🎵 Müzik", musicSearchPh:"Şarkı ara…", musicSearchAria:"Şarkı ara",
+    musicEmpty:"Henüz şarkı yok — yönetim panelinden ekle 🎵", musicNoMatch:"Eşleşen şarkı yok.",
+    adTabMusic:"🎵 Müzik", mAddTitle:"Şarkı ekle", mName:"Başlık", mNamePh:"Şarkı adı",
+    mArtist:"Sanatçı", mArtistPh:"İsteğe bağlı", mSrc:"Dosya veya bağlantı", mAdd:"Ekle", mDel:"Sil",
+    mList:"Şarkı listesi", or:"veya",
+    mHint:"index.html yanına bir mp3 yükleyip adını yaz ya da doğrudan bir ses bağlantısı yapıştır.",
+    mErrName:"Şarkı adı gir ⚠️", mErrSrc:"Dosya adı veya bağlantı gir ⚠️",
+    mAdded:'"{name}" eklendi ✅', mDeleted:"Şarkı silindi", mConfirmDel:'"{name}" silinsin mi?',
+    t_saveFail:"Kaydedilemedi — depolama dolu ⚠️",
     pwTitle:"Yönetim paneli şifresi", pwHint:"Devam etmek için şifreyi gir", pwPlaceholder:"••••••••",
     pwWrong:"Şifre yanlış", pwEnter:"Giriş", pwCancel:"İptal",
     t_adminUnlocked:"Yönetim paneline hoş geldin 🔓", t_adminOnly:"Bu panel yalnızca mağaza yöneticisi içindir",
@@ -1497,31 +1579,137 @@ function dismissWelcome(){
 }
 function acceptWelcomeMusic(){
   dismissWelcome();
+  if (tracks.length) playTrack(0); else openMusic();
+}
+
+/* ============================================================
+   مكتبة الأغاني: تشغيل + بحث
+   ============================================================ */
+const DEFAULT_TRACKS = [
+  { id: 1, title: "كعبة هاجلر هو دير الله", artist: "إنشاد", src: "kabede.mp3" }
+];
+let tracks = [];
+let currentTrack = -1;
+
+function loadTracks(){ tracks = DB.get(K.tracks, DEFAULT_TRACKS); }
+function saveTracks(){
+  try { DB.set(K.tracks, tracks); return true; }
+  catch(e){ showToast(t("t_saveFail")); return false; }
+}
+
+function openMusic(){
+  renderTracks();
+  document.getElementById("musicOv").classList.add("open");
+  document.body.style.overflow = "hidden";
+  setTimeout(() => { const s = document.getElementById("musicSearch"); if (s) s.focus(); }, 80);
+}
+function closeMusic(){
+  document.getElementById("musicOv").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function filteredTracks(){
+  const q = (document.getElementById("musicSearch")?.value || "").trim().toLowerCase();
+  if (!q) return tracks.map((tr, i) => ({ tr, i }));
+  return tracks.map((tr, i) => ({ tr, i }))
+    .filter(({tr}) => (tr.title + " " + (tr.artist || "")).toLowerCase().includes(q));
+}
+
+function renderTracks(){
+  const box = document.getElementById("trackList");
+  if (!box) return;
+  const list = filteredTracks();
+  if (!list.length){
+    box.innerHTML = `<div class="empty-note">${esc(tracks.length ? t("musicNoMatch") : t("musicEmpty"))}</div>`;
+    return;
+  }
+  const a = document.getElementById("bgAudio");
+  const playing = a && !a.paused;
+  box.innerHTML = list.map(({tr, i}) => `
+    <div class="track ${i === currentTrack ? "on" : ""}" onclick="playTrack(${i})">
+      <span class="track-ic">${i === currentTrack && playing ? "⏸" : "▶"}</span>
+      <span class="track-meta">
+        <b>${esc(tr.title)}</b>
+        ${tr.artist ? `<small>${esc(tr.artist)}</small>` : ""}
+      </span>
+      ${i === currentTrack ? `<span class="track-eq">🎵</span>` : ""}
+    </div>`).join("");
+}
+
+function playTrack(i){
+  const tr = tracks[i];
+  if (!tr) return;
   const a = document.getElementById("bgAudio");
   if (!a) return;
-  a.volume = 0.55;
+  // نفس الأغنية → إيقاف/تشغيل
+  if (i === currentTrack && !a.paused){ a.pause(); syncPlayerUI(); return; }
+  if (i !== currentTrack){ a.src = tr.src; currentTrack = i; }
+  a.volume = 0.6;
   const p = a.play();
   if (p && p.catch) p.catch(() => showToast(t("audioErr")));
-  document.getElementById("miniPlayer").classList.add("show");
-  document.getElementById("bgAudioBtn").textContent = "⏸";
+  syncPlayerUI();
 }
+
+function syncPlayerUI(){
+  const a = document.getElementById("bgAudio");
+  const tr = tracks[currentTrack];
+  const mini = document.getElementById("miniPlayer");
+  const btn = document.getElementById("bgAudioBtn");
+  const lbl = document.getElementById("miniLabel");
+  if (tr && mini){
+    mini.classList.add("show");
+    if (lbl) lbl.textContent = "🎵 " + tr.title;
+    if (btn) btn.textContent = a && a.paused ? "▶" : "⏸";
+  }
+  renderTracks();
+}
+
 function toggleBgAudio(){
   const a = document.getElementById("bgAudio");
-  const btn = document.getElementById("bgAudioBtn");
-  if (!a) return;
+  if (!a || !a.src) return;
   if (a.paused){
     const p = a.play();
     if (p && p.catch) p.catch(() => showToast(t("audioErr")));
-    btn.textContent = "⏸";
-  } else {
-    a.pause();
-    btn.textContent = "▶";
-  }
+  } else a.pause();
+  syncPlayerUI();
 }
 function hideMiniPlayer(){
   const a = document.getElementById("bgAudio");
   if (a) a.pause();
   document.getElementById("miniPlayer").classList.remove("show");
+  currentTrack = -1;
+  renderTracks();
+}
+function nextTrack(){
+  if (!tracks.length) return;
+  playTrack((currentTrack + 1) % tracks.length);
+}
+
+/* ===== إدارة الأغاني ===== */
+function addTrack(){
+  const title  = document.getElementById("ntTitle").value.trim();
+  const artist = document.getElementById("ntArtist").value.trim();
+  const src    = document.getElementById("ntSrc").value.trim();
+  if (title.length < 2){ showToast(t("mErrName")); return; }
+  if (!src){ showToast(t("mErrSrc")); return; }
+  const id = tracks.reduce((m, x) => Math.max(m, x.id || 0), 0) + 1;
+  tracks.push({ id, title, artist, src });
+  if (!saveTracks()){ tracks.pop(); return; }
+  renderTracks(); renderAdminTab("music");
+  showToast(t("mAdded", { name: title }));
+}
+function deleteTrack(i){
+  const tr = tracks[i];
+  if (!tr) return;
+  if (!confirm(t("mConfirmDel", { name: tr.title }))) return;
+  const a = document.getElementById("bgAudio");
+  if (i === currentTrack && a){ a.pause(); currentTrack = -1;
+    document.getElementById("miniPlayer").classList.remove("show"); }
+  else if (i < currentTrack) currentTrack--;
+  tracks.splice(i, 1);
+  saveTracks();
+  renderTracks(); renderAdminTab("music");
+  showToast(t("mDeleted"));
 }
 
 /* ===== حالة المتجر (مفتوح / مغلق) ===== */
@@ -2556,6 +2744,39 @@ function renderAdminTab(tab){
     }
     box.innerHTML = html;
 
+  } else if (tab === "music"){
+    let html = `<div class="dash-h">🎵 ${esc(t("adTabMusic")).replace(/^🎵\s*/,"")} (${tracks.length})</div>
+      <div class="panel">
+        <div class="panel-h">➕ ${esc(t("mAddTitle"))}</div>
+        <div class="prod-add">
+          <div class="field"><label>${esc(t("mName"))}</label><input type="text" id="ntTitle" placeholder="${esc(t("mNamePh"))}"></div>
+          <div class="field"><label>${esc(t("mArtist"))}</label><input type="text" id="ntArtist" placeholder="${esc(t("mArtistPh"))}"></div>
+          <div class="field" style="grid-column:1/-1;"><label>${esc(t("mSrc"))}</label><input type="text" id="ntSrc" placeholder="song.mp3  ${esc(t("or"))}  https://..."></div>
+          <button class="mini-btn gold" style="padding:11px 16px;" onclick="addTrack()">${esc(t("mAdd"))}</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);padding:0 4px 4px;">${esc(t("mHint"))}</p>
+      </div>
+      <div class="panel"><div class="panel-h">${esc(t("mList"))}</div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>${esc(t("mName"))}</th><th>${esc(t("mArtist"))}</th><th>${esc(t("mSrc"))}</th><th></th></tr></thead><tbody>`;
+    if (!tracks.length){
+      html += `<tr><td colspan="4" style="text-align:center;color:var(--muted);">${esc(t("musicEmpty"))}</td></tr>`;
+    } else {
+      tracks.forEach((tr, i) => {
+        html += `<tr>
+          <td><b>${esc(tr.title)}</b></td>
+          <td>${esc(tr.artist || "—")}</td>
+          <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted);">${esc(tr.src)}</td>
+          <td style="white-space:nowrap;">
+            <button class="mini-btn" onclick="playTrack(${i})">▶</button>
+            <button class="mini-btn danger" onclick="deleteTrack(${i})">${esc(t("mDel"))}</button>
+          </td>
+        </tr>`;
+      });
+    }
+    html += `</tbody></table></div></div>`;
+    box.innerHTML = html;
+
   } else if (tab === "settings"){
     box.innerHTML = `
       <div class="dash-h">⚙️ إعدادات المتجر</div>
@@ -2803,6 +3024,7 @@ loadProducts();
 loadCart();
 loadFavs();
 loadRecent();
+loadTracks();
 renderFilters();
 renderProducts();
 renderStories();
@@ -2816,6 +3038,16 @@ applyThemeIcon();
 applyI18n();
 applyStoreState();
 maybeShowWelcome();
+
+/* الأغنية التالية تلقائياً + مزامنة الأزرار */
+(function(){
+  const a = document.getElementById("bgAudio");
+  if (!a) return;
+  a.addEventListener("ended", nextTrack);
+  a.addEventListener("play",  syncPlayerUI);
+  a.addEventListener("pause", syncPlayerUI);
+  a.addEventListener("error", () => { if (a.src) showToast(t("audioErr")); });
+})();
 
 /* ===== PWA: التثبيت + Service Worker ===== */
 let deferredPrompt = null;
