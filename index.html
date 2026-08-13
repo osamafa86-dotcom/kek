@@ -1607,7 +1607,7 @@ let currentTrack = -1;
 
 /* بعض الاستضافات تمنع تضمين يوتيوب عبر CSP (frame-src).
    نكتشف ذلك تلقائياً ونفتح الأغنية على يوتيوب بدل إظهار صندوق فارغ. */
-let embedBlocked = DB.get("hb_embed_blocked", null); // null = غير معروف بعد
+let embedBlocked = null; // null = غير معروف بعد؛ يُفحص مرّة كل جلسة
 let ytFallbackTimer = null;
 
 document.addEventListener("securitypolicyviolation", e => {
@@ -1615,7 +1615,6 @@ document.addEventListener("securitypolicyviolation", e => {
       && /youtube/.test(e.blockedURI || "")){
     if (embedBlocked !== true){
       embedBlocked = true;
-      try { DB.set("hb_embed_blocked", true); } catch(err){}
     }
     clearTimeout(ytFallbackTimer);
     closeYt();
@@ -1633,10 +1632,7 @@ function probeEmbedSupport(){
   probe.src = "https://www.youtube-nocookie.com/embed/_cspprobe_";
   document.body.appendChild(probe);
   setTimeout(() => {
-    if (embedBlocked === null){
-      embedBlocked = false;
-      try { DB.set("hb_embed_blocked", false); } catch(err){}
-    }
+    if (embedBlocked === null) embedBlocked = false;
     probe.remove();
     renderTracks();
   }, 900);
@@ -3137,6 +3133,7 @@ loadCart();
 loadFavs();
 loadRecent();
 loadTracks();
+try { localStorage.removeItem("hb_embed_blocked"); } catch(e){}
 renderFilters();
 renderProducts();
 renderStories();
