@@ -1,0 +1,29 @@
+name: Clean up leftover patch files
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/ci-cleanup.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove patches/ and this workflow
+        run: |
+          set -euo pipefail
+          test -f index.html
+          rm -rf patches .github/workflows/ci-cleanup.yml
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Remove leftover patch files
+
+          The patches/ directory carried an earlier change into CI and has
+          served its purpose. index.html is untouched.'
+          git push
