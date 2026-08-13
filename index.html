@@ -754,11 +754,26 @@
   .music-head h3 { flex: 1; font-size: 19px; font-weight: 900; color: var(--brown-900); }
   .music-search { display: flex; align-items: center; gap: 8px; margin: 0 20px 12px; padding: 9px 14px; background: var(--card); border: 2px solid var(--cream); border-radius: 30px; }
   .music-search input { flex: 1; border: none; background: transparent; font-size: 14px; color: var(--text); outline: none; }
-  .yt-box { display: none; margin: 0 20px 12px; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 16/9; flex-shrink: 0; }
-  .yt-box.show { display: block; position: relative; }
-  .yt-open { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,.72); color: #fff; font-size: 11px; font-weight: 800; padding: 6px 11px; border-radius: 20px; }
-  .yt-open:hover { background: #ff0033; }
-  .yt-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+  /* مشغّل الفيديو العائم — يبقى ظاهراً وشغّالاً أثناء التصفّح */
+  .yt-float { position: fixed; bottom: 22px; right: 22px; z-index: 160; width: 300px; max-width: calc(100vw - 32px);
+    display: none; flex-direction: column; border-radius: 14px; overflow: hidden; background: #000;
+    box-shadow: 0 10px 34px rgba(0,0,0,.45); }
+  .yt-float.show { display: flex; }
+  .yt-bar { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 10px; background: #1a1a1a; }
+  .yt-title { flex: 1; color: #fff; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .yt-x { width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; font-size: 12px; }
+  .yt-x:hover { background: #ff0033; }
+  .yt-frame-wrap { aspect-ratio: 16/9; background: #000; }
+  .yt-frame-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  /* أكبر قليلاً عندما تكون لوحة الأغاني مفتوحة */
+  :root:has(.music-ov.open) .yt-float { width: 420px; bottom: auto; top: 22px; right: 22px; }
+  /* لا يزاحم السلة أو اللوحات */
+  :root:has(.drawer.open) .yt-float, :root:has(.dash.open) .yt-float,
+  :root:has(.pm-ov.open) .yt-float, :root:has(.pw-ov.open) .yt-float { opacity: .25; }
+  @media (max-width: 720px){
+    .yt-float { width: 200px; bottom: 78px; right: 12px; }
+    :root:has(.music-ov.open) .yt-float { width: calc(100vw - 32px); top: 12px; right: 16px; bottom: auto; }
+  }
   .track-ic.yt { background: #ff0033; color: #fff; }
   a.track { text-decoration: none; }
   .track-ext { font-size: 14px; color: var(--muted); font-weight: 900; }
@@ -1172,9 +1187,17 @@
       <input type="search" id="musicSearch" data-i18n-ph="musicSearchPh" placeholder="ابحث عن أغنية..."
              oninput="renderTracks()" data-i18n-aria="musicSearchAria" aria-label="بحث عن أغنية">
     </div>
-    <div class="yt-box" id="ytBox"></div>
     <div class="track-list" id="trackList"></div>
   </div>
+</div>
+
+<!-- ===== مشغّل الفيديو العائم (يبقى شغّالاً أثناء التسوّق) ===== -->
+<div class="yt-float" id="ytBox">
+  <div class="yt-bar">
+    <span class="yt-title" id="ytTitle"></span>
+    <button class="yt-x" onclick="stopYt()" data-i18n-aria="ytClose" aria-label="إيقاف">✕</button>
+  </div>
+  <div class="yt-frame-wrap" id="ytFrameWrap"></div>
 </div>
 
 <div class="mini-player" id="miniPlayer" role="region" aria-live="polite">
@@ -1351,7 +1374,7 @@ const I18N = {
     adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
     musicAria:"الأغاني", musicTitle:"🎵 الأغاني", musicSearchPh:"ابحث عن أغنية...", musicSearchAria:"بحث عن أغنية",
     musicEmpty:"لا توجد أغانٍ بعد — أضِفها من لوحة الإدارة 🎵",
-    ytOpen:"افتح على يوتيوب ↗", ytOpened:"جارٍ فتح يوتيوب ▶", musicNoMatch:"لا توجد أغنية مطابقة.",
+    ytOpen:"افتح على يوتيوب ↗", ytClose:"إيقاف الأغنية", ytOpened:"جارٍ فتح يوتيوب ▶", musicNoMatch:"لا توجد أغنية مطابقة.",
     adTabMusic:"🎵 الأغاني", mAddTitle:"إضافة أغنية", mName:"الاسم", mNamePh:"اسم الأغنية",
     mArtist:"المنشد / الفنان", mArtistPh:"اختياري", mSrc:"رابط يوتيوب أو ملف", mAdd:"إضافة", mDel:"حذف",
     mList:"قائمة الأغاني", or:"أو",
@@ -1438,7 +1461,7 @@ const I18N = {
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
     musicAria:"Music", musicTitle:"🎵 Music", musicSearchPh:"Search for a song…", musicSearchAria:"Search songs",
     musicEmpty:"No songs yet — add them from the admin panel 🎵",
-    ytOpen:"Open on YouTube ↗", ytOpened:"Opening YouTube ▶", musicNoMatch:"No matching song.",
+    ytOpen:"Open on YouTube ↗", ytClose:"Stop the song", ytOpened:"Opening YouTube ▶", musicNoMatch:"No matching song.",
     adTabMusic:"🎵 Music", mAddTitle:"Add a song", mName:"Title", mNamePh:"Song title",
     mArtist:"Artist", mArtistPh:"Optional", mSrc:"YouTube link or file", mAdd:"Add", mDel:"Delete",
     mList:"Song list", or:"or",
@@ -1525,7 +1548,7 @@ const I18N = {
     adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
     musicAria:"Müzik", musicTitle:"🎵 Müzik", musicSearchPh:"Şarkı ara…", musicSearchAria:"Şarkı ara",
     musicEmpty:"Henüz şarkı yok — yönetim panelinden ekle 🎵",
-    ytOpen:"YouTube'da aç ↗", ytOpened:"YouTube açılıyor ▶", musicNoMatch:"Eşleşen şarkı yok.",
+    ytOpen:"YouTube'da aç ↗", ytClose:"Şarkıyı durdur", ytOpened:"YouTube açılıyor ▶", musicNoMatch:"Eşleşen şarkı yok.",
     adTabMusic:"🎵 Müzik", mAddTitle:"Şarkı ekle", mName:"Başlık", mNamePh:"Şarkı adı",
     mArtist:"Sanatçı", mArtistPh:"İsteğe bağlı", mSrc:"YouTube bağlantısı veya dosya", mAdd:"Ekle", mDel:"Sil",
     mList:"Şarkı listesi", or:"veya",
@@ -1673,9 +1696,7 @@ function openMusic(){
 function closeMusic(){
   document.getElementById("musicOv").classList.remove("open");
   document.body.style.overflow = "";
-  // إيقاف فيديو يوتيوب عند إغلاق اللوحة
-  const box = document.getElementById("ytBox");
-  if (box && box.classList.contains("show")){ closeYt(); currentTrack = -1; }
+  // الأغنية تكمل شغّالة أثناء التسوّق — المشغّل يصغّر ويبقى عائماً
 }
 
 function filteredTracks(){
@@ -1729,10 +1750,11 @@ function playTrack(i){
     if (embedBlocked === true){ renderTracks(); return; }
 
     const box = document.getElementById("ytBox");
-    box.innerHTML = `<iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${esc(vid)}?autoplay=1&rel=0"
+    document.getElementById("ytFrameWrap").innerHTML =
+      `<iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${esc(vid)}?autoplay=1&rel=0"
         title="${esc(tr.title)}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen loading="lazy"></iframe>
-      <a class="yt-open" href="${esc(ytWatchUrl(vid))}" target="_blank" rel="noopener noreferrer" data-i18n="ytOpen">افتح على يوتيوب ↗</a>`;
+        allowfullscreen></iframe>`;
+    document.getElementById("ytTitle").textContent = tr.title;
     box.classList.add("show");
     applyI18n();
     // إن مُنع الإطار خلال لحظة، انتقل تلقائياً لفتح يوتيوب
@@ -1754,7 +1776,15 @@ function playTrack(i){
 function closeYt(){
   clearTimeout(ytFallbackTimer);
   const box = document.getElementById("ytBox");
-  if (box){ box.innerHTML = ""; box.classList.remove("show"); }
+  const wrap = document.getElementById("ytFrameWrap");
+  if (wrap) wrap.innerHTML = "";
+  if (box) box.classList.remove("show");
+}
+/* إيقاف الفيديو من زر ✕ على المشغّل العائم */
+function stopYt(){
+  closeYt();
+  currentTrack = -1;
+  renderTracks();
 }
 
 function syncPlayerUI(){
