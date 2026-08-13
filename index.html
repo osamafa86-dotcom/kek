@@ -755,7 +755,9 @@
   .music-search { display: flex; align-items: center; gap: 8px; margin: 0 20px 12px; padding: 9px 14px; background: var(--card); border: 2px solid var(--cream); border-radius: 30px; }
   .music-search input { flex: 1; border: none; background: transparent; font-size: 14px; color: var(--text); outline: none; }
   .yt-box { display: none; margin: 0 20px 12px; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 16/9; flex-shrink: 0; }
-  .yt-box.show { display: block; }
+  .yt-box.show { display: block; position: relative; }
+  .yt-open { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,.72); color: #fff; font-size: 11px; font-weight: 800; padding: 6px 11px; border-radius: 20px; }
+  .yt-open:hover { background: #ff0033; }
   .yt-box iframe { width: 100%; height: 100%; border: 0; display: block; }
   .track-ic.yt { background: #ff0033; color: #fff; }
   .track-list { overflow-y: auto; padding: 0 12px 16px; -webkit-overflow-scrolling: touch; }
@@ -1346,7 +1348,8 @@ const I18N = {
     s_new:"جديد", s_prep:"قيد التحضير", s_deliv:"قيد التوصيل", s_done:"مكتمل", s_cancel:"ملغي",
     adminBadge:"إدارة", savedAddrNew:"— كتابة عنوان جديد —",
     musicAria:"الأغاني", musicTitle:"🎵 الأغاني", musicSearchPh:"ابحث عن أغنية...", musicSearchAria:"بحث عن أغنية",
-    musicEmpty:"لا توجد أغانٍ بعد — أضِفها من لوحة الإدارة 🎵", musicNoMatch:"لا توجد أغنية مطابقة.",
+    musicEmpty:"لا توجد أغانٍ بعد — أضِفها من لوحة الإدارة 🎵",
+    ytOpen:"افتح على يوتيوب ↗", ytOpened:"جارٍ فتح يوتيوب ▶", musicNoMatch:"لا توجد أغنية مطابقة.",
     adTabMusic:"🎵 الأغاني", mAddTitle:"إضافة أغنية", mName:"الاسم", mNamePh:"اسم الأغنية",
     mArtist:"المنشد / الفنان", mArtistPh:"اختياري", mSrc:"رابط يوتيوب أو ملف", mAdd:"إضافة", mDel:"حذف",
     mList:"قائمة الأغاني", or:"أو",
@@ -1432,7 +1435,8 @@ const I18N = {
     s_new:"New", s_prep:"Preparing", s_deliv:"Out for delivery", s_done:"Completed", s_cancel:"Cancelled",
     adminBadge:"Admin", savedAddrNew:"— Enter a new address —",
     musicAria:"Music", musicTitle:"🎵 Music", musicSearchPh:"Search for a song…", musicSearchAria:"Search songs",
-    musicEmpty:"No songs yet — add them from the admin panel 🎵", musicNoMatch:"No matching song.",
+    musicEmpty:"No songs yet — add them from the admin panel 🎵",
+    ytOpen:"Open on YouTube ↗", ytOpened:"Opening YouTube ▶", musicNoMatch:"No matching song.",
     adTabMusic:"🎵 Music", mAddTitle:"Add a song", mName:"Title", mNamePh:"Song title",
     mArtist:"Artist", mArtistPh:"Optional", mSrc:"YouTube link or file", mAdd:"Add", mDel:"Delete",
     mList:"Song list", or:"or",
@@ -1518,7 +1522,8 @@ const I18N = {
     s_new:"Yeni", s_prep:"Hazırlanıyor", s_deliv:"Yolda", s_done:"Tamamlandı", s_cancel:"İptal edildi",
     adminBadge:"Yönetici", savedAddrNew:"— Yeni adres yaz —",
     musicAria:"Müzik", musicTitle:"🎵 Müzik", musicSearchPh:"Şarkı ara…", musicSearchAria:"Şarkı ara",
-    musicEmpty:"Henüz şarkı yok — yönetim panelinden ekle 🎵", musicNoMatch:"Eşleşen şarkı yok.",
+    musicEmpty:"Henüz şarkı yok — yönetim panelinden ekle 🎵",
+    ytOpen:"YouTube'da aç ↗", ytOpened:"YouTube açılıyor ▶", musicNoMatch:"Eşleşen şarkı yok.",
     adTabMusic:"🎵 Müzik", mAddTitle:"Şarkı ekle", mName:"Başlık", mNamePh:"Şarkı adı",
     mArtist:"Sanatçı", mArtistPh:"İsteğe bağlı", mSrc:"YouTube bağlantısı veya dosya", mAdd:"Ekle", mDel:"Sil",
     mList:"Şarkı listesi", or:"veya",
@@ -1598,6 +1603,32 @@ const DEFAULT_TRACKS = [
 let tracks = [];
 let currentTrack = -1;
 
+/* بعض الاستضافات تمنع تضمين يوتيوب عبر CSP (frame-src).
+   نكتشف ذلك تلقائياً ونفتح الأغنية على يوتيوب بدل إظهار صندوق فارغ. */
+let embedBlocked = DB.get("hb_embed_blocked", false);
+let ytFallbackTimer = null;
+document.addEventListener("securitypolicyviolation", e => {
+  if (e.violatedDirective && /frame-src/.test(e.violatedDirective)
+      && /youtube/.test(e.blockedURI || "")){
+    embedBlocked = true;
+    try { DB.set("hb_embed_blocked", true); } catch(err){}
+    const box = document.getElementById("ytBox");
+    if (box && box.classList.contains("show")){
+      clearTimeout(ytFallbackTimer);
+      const tr = tracks[currentTrack];
+      closeYt();
+      if (tr) openYtTab(trackYt(tr));
+    }
+  }
+});
+function openYtTab(vid){
+  if (!vid) return;
+  clearTimeout(ytFallbackTimer);
+  closeYt();
+  window.open("https://www.youtube.com/watch?v=" + encodeURIComponent(vid), "_blank", "noopener");
+  showToast(t("ytOpened"));
+}
+
 /* استخراج معرّف يوتيوب من أي صيغة رابط */
 function ytId(s){
   if (!s) return null;
@@ -1673,15 +1704,23 @@ function playTrack(i){
   const vid = trackYt(tr);
 
   if (vid){
-    // فيديو يوتيوب: أوقف أي صوت محلي واعرض المشغّل المضمّن
+    // فيديو يوتيوب: أوقف أي صوت محلي
     if (a){ a.pause(); a.removeAttribute("src"); }
     currentTrack = i;
-    const box = document.getElementById("ytBox");
-    box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${esc(vid)}?autoplay=1&rel=0"
-        title="${esc(tr.title)}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen loading="lazy"></iframe>`;
-    box.classList.add("show");
     document.getElementById("miniPlayer").classList.remove("show");
+
+    // بعض الاستضافات تمنع التضمين (CSP) — عندها نفتح يوتيوب مباشرة
+    if (embedBlocked){ openYtTab(vid); renderTracks(); return; }
+
+    const box = document.getElementById("ytBox");
+    box.innerHTML = `<iframe id="ytFrame" src="https://www.youtube-nocookie.com/embed/${esc(vid)}?autoplay=1&rel=0"
+        title="${esc(tr.title)}" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen loading="lazy"></iframe>
+      <button class="yt-open" onclick="openYtTab('${esc(vid)}')" data-i18n="ytOpen">افتح على يوتيوب ↗</button>`;
+    box.classList.add("show");
+    applyI18n();
+    // إن مُنع الإطار خلال لحظة، انتقل تلقائياً لفتح يوتيوب
+    ytFallbackTimer = setTimeout(() => { if (embedBlocked) openYtTab(vid); }, 1200);
     renderTracks();
     return;
   }
@@ -1697,6 +1736,7 @@ function playTrack(i){
   syncPlayerUI();
 }
 function closeYt(){
+  clearTimeout(ytFallbackTimer);
   const box = document.getElementById("ytBox");
   if (box){ box.innerHTML = ""; box.classList.remove("show"); }
 }
