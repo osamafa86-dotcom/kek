@@ -13,7 +13,7 @@ jobs:
       - name: Verify checksum, apply patch, push
         run: |
           set -euo pipefail
-          base64 -d patches/store-close.patch.b64 > /tmp/p.patch
+          cat patches/store-close.b64.part-* | tr -d '\n' | base64 -d > /tmp/p.patch
           echo "3d2056cf307f6a4a62874e157e3494e9689f6ef279afa4d5fcd897ec2b575bf9  /tmp/p.patch" | sha256sum -c -
           git apply --check /tmp/p.patch
           git apply /tmp/p.patch
